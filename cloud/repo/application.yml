@@ -49,6 +49,7 @@ platform:
             - "/identity/api/v1/auth/**"
             - "/swagger-ui/**"
             - "/v3/api-docs/**"
+            - "/error"
         admin-paths:
             - "/actuator/**"
         cors:
