@@ -1,0 +1,27 @@
+platform:
+  security:
+    cors:
+      enabled: true
+      allowed-origin-patterns:
+        - http://localhost:5173
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: cbss-identity-service
+              uri: lb://cbss-identity-service
+              predicates:
+                - Path=/identity/**
+
+            - id: cbss-storage-service
+              uri: lb://cbss-storage-service
+              predicates:
+                - Path=/storage/**
+
+            - id: cbss-reports-service
+              uri: lb://cbss-reports-service
+              predicates:
+                - Path=/reports/**
