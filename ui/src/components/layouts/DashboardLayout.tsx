@@ -1,9 +1,16 @@
 import type { ReactNode } from "react";
 
 export type DashboardLayoutProps = {
-  children: ReactNode;
+    children: ReactNode;
 };
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  return <>{children}</>;
+    return (
+        <section className="relative p-2 rounded-xl overflow-hidden text-secondary dark:text-cool">
+            <div className="absolute inset-0 bg-white/70 dark:bg-secondary backdrop-blur-md"></div>
+            <div className="relative">
+                {children}
+            </div>
+        </section>
+    );
 }

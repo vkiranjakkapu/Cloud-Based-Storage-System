@@ -1,9 +1,9 @@
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 
-export default function Dashboard() {
+export default function Groups() {
     return (
         <DashboardLayout>
-            <h1>Dashboard</h1>
+            <h1>Groups</h1>
         </DashboardLayout>
     );
 }

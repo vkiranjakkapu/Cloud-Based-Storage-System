@@ -19,6 +19,10 @@ export default function AuthenticationContextProvider({
     children,
 }: AuthenticationContextProviderProps) {
     const [profile, setProfile] = useState<UserProfile | null>(null);
+
+    // lazy initializer -
+    // Runs this initialization logic when the state is initially created,
+    // rather than evaluating it on every render.
     const [status, setStatus] = useState<AuthStatus>(() => {
         return TokenStorage.getAccessToken() !== null
             ? AuthStatus.INITIALIZING
