@@ -1,16 +1,31 @@
 import type { ReactNode } from "react";
+import SidebarLayout from "./SidebarLayout";
 
 export type DashboardLayoutProps = {
-    children: ReactNode;
+    children: [ReactNode, ReactNode?];
+    override?: boolean;
 };
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+export default function DashboardLayout({
+    children,
+    override = false,
+}: DashboardLayoutProps) {
+    const [dashboard, focusMenu] = children;
+
     return (
-        <section className="relative p-2 rounded-xl overflow-hidden text-secondary dark:text-cool">
-            <div className="absolute inset-0 bg-white/70 dark:bg-secondary backdrop-blur-md"></div>
-            <div className="relative">
-                {children}
-            </div>
-        </section>
+        <SidebarLayout>
+            {/* Dashboard View */}
+            {!override ? (
+                <section className="relative p-2 rounded-xl overflow-hidden text-secondary dark:text-cool">
+                    <div className="absolute inset-0 bg-white/70 dark:bg-secondary backdrop-blur-md"></div>
+                    <div className="relative">{dashboard}</div>
+                </section>
+            ) : (
+                <section className="p-2">{dashboard}</section>
+            )}
+
+            {/* Focus Menu Aside Nav */}
+            {focusMenu}
+        </SidebarLayout>
     );
 }

@@ -1,15 +1,16 @@
 import { Bars3Icon, MoonIcon, SunIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState, type ReactNode } from "react";
+import IconComponent from "../IconComponent";
 import Sidebar from "../nav/Sidebar";
 import FavIcon from "/favicon.png";
-import IconComponent from "../IconComponent";
 
 export type SidebarLayoutProps = {
-    children: ReactNode;
+    children: [ReactNode, ReactNode?];
 };
 
 export default function SidebarLayout({ children }: SidebarLayoutProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const [dashboard, focusMenu] = children;
 
     const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
         if (typeof window !== "undefined") {
@@ -45,10 +46,10 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
             )}
             <aside
                 className={`
-					fixed inset-y-0 left-0 z-50 flex w-76 flex-col 
+					fixed inset-y-0 left-0 z-50 flex flex-col ${focusMenu ? "w-80" : ""}
                     transition-transform duration-300 ease-in-out
                     rounded-e-xl overflow-hidden
-					dark:text-cool bg-white/70 dark:bg-secondary backdrop-blur-md
+				  bg-white/50 dark:bg-secondary/50 backdrop-blur-lg
 					border-r border-slate-200 dark:border-cool/30
 					md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}
 				`}
@@ -57,11 +58,15 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
                     isDarkMode={isDarkMode}
                     toggleTheme={toggleTheme}
                     toggleMenu={() => setIsOpen(!isOpen)}
-                />
+                >
+                    {focusMenu && focusMenu}
+                </Sidebar>
             </aside>
 
             {/* RIGHT VIEWPORT VIEW CANVAS */}
-            <div className="flex flex-1 flex-col md:pl-76 h-full w-full">
+            <div
+                className={`flex flex-1 flex-col h-full w-full ${focusMenu ? "md:pl-80" : "md:pl-[3.45rem]"}`}
+            >
                 {/* Top Sticky Header for Mobile */}
                 <header className="flex h-16 items-center justify-between border-b px-4 md:hidden border-gray-200 bg-white dark:border-secondary-dark dark:bg-secondary">
                     <img
@@ -87,7 +92,7 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
 
                 {/* Main Context Canvas View */}
                 <main className="flex-1 p-6 overflow-y-auto">
-                    {children ?? (
+                    {dashboard ?? (
                         <>
                             <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                                 Workspace

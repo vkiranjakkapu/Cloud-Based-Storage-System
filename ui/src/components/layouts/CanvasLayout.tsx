@@ -6,7 +6,7 @@ export type CanvasLayoutProps = {
 
 export default function CanvasLayout({ children }: CanvasLayoutProps) {
     return (
-        <main className="bg-cool/60 dark:bg-secondary-dark min-h-screen">
+        <main className="bg-cool/60 dark:bg-secondary-dark text-secondary-accent dark:text-white min-h-screen">
             {children}
         </main>
     );

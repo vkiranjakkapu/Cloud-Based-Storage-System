@@ -8,6 +8,13 @@
     --color-secondary: #2a3946;
     --color-secondary-dark: #1b242d;
 
+    --color-secondary-light: #919ca9;
+    --color-secondary-accent: #616f83;
+
     --color-warm: #f2e4bb;
     --color-cool: #c5e2e6;
 }
+
+/* :root {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+} */
