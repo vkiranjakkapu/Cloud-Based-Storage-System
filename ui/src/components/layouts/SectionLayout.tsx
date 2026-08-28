@@ -1,37 +1,42 @@
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import ActionButton, { type ActionButtonProps } from "../ActionButtonComponent";
+import {
+    ButtonGroupComponent,
+    type ButtonGroupComponentProps,
+} from "../ButtonGroupComponent";
+import type { FloatingMenuComponentProps } from "../FloatingMenuComponent";
+import FloatingMenuComponent from "../FloatingMenuComponent";
+import type { IconComponentProps } from "../IconComponent";
+import IconComponent from "../IconComponent";
+import type { InputComponentProps } from "../form/InputComponent";
+import InputComponent from "../form/InputComponent";
 import {
     PaginationButtons,
     type PaginationButtonsProps,
-} from "../../../pagination/Pagination";
-import ActionButton from "../../ActionButtonComponent";
-import type { IconComponentProps } from "../../IconComponent";
-import IconComponent from "../../IconComponent";
-import type { InputComponentProps } from "../../form/InputComponent";
-import InputComponent from "../../form/InputComponent";
-import type { FloatingMenuComponentProps } from "../../FloatingMenuComponent";
-import FloatingMenuComponent from "../../FloatingMenuComponent";
+} from "../pagination/Pagination";
 
 type SectionLayoutProps<T> = {
     children: ReactNode;
     title?: string;
     description?: string;
     breadCrumbs?: { text: string; uri?: string }[];
-    actionButtons?: {
-        type?: "icon" | "button";
-        props?: IconComponentProps;
+    actionElements?: {
+        icon?: IconComponentProps;
+        button?: ActionButtonProps;
         dropdown?: FloatingMenuComponentProps;
+        iconGroup?: ButtonGroupComponentProps;
     }[];
     search?: InputComponentProps;
     pagination?: PaginationButtonsProps<T>;
 };
 
-export default function DashboardSectionLayout<T>({
+export default function SectionLayout<T>({
     children,
     title,
     description,
     breadCrumbs,
-    actionButtons,
+    actionElements,
     search,
     pagination,
 }: SectionLayoutProps<T>) {
@@ -40,12 +45,10 @@ export default function DashboardSectionLayout<T>({
     return (
         <div
             className={`
-                *:not-last:flex *:not-last:flex-col 
+                *:not-last:flex *:not-last:flex-wrap 
                 *:not-last:justify-between 
-                *:not-last:items-start 
-                *:not-last:gap-3 
-                md:*:not-last:flex-row 
-                md:*:not-last:items-center 
+                *:not-last:items-center 
+                *:not-last:gap-3
             `}
         >
             {/* Header */}
@@ -85,23 +88,23 @@ export default function DashboardSectionLayout<T>({
                         <span className="text-sm">{description}</span>
                     )}
                 </div>
-                <div className="flex items-center gap-2">
-                    {actionButtons &&
-                        actionButtons.map((element, idx) => {
-                            return element.type === "icon" ? (
+                <div className="flex flex-wrap items-center gap-2">
+                    {actionElements &&
+                        actionElements.map((type, idx) => {
+                            return type.icon ? (
                                 <IconComponent
                                     key={idx}
                                     customise="p-2 shadow-xs"
                                     customiseIcon="size-4"
-                                    {...element.props}
+                                    {...type.icon}
                                 />
-                            ) : element.type === "button" ? (
-                                <ActionButton {...element.props} />
+                            ) : type.button ? (
+                                <ActionButton {...type.button} />
+                            ) : type.dropdown ? (
+                                <FloatingMenuComponent {...type.dropdown} />
                             ) : (
-                                element.dropdown && (
-                                    <FloatingMenuComponent
-                                        {...element.dropdown}
-                                    />
+                                type.iconGroup && (
+                                    <ButtonGroupComponent {...type.iconGroup} />
                                 )
                             );
                         })}

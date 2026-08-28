@@ -29,7 +29,7 @@ export default function FloatingMenuComponent({
     props,
     useIcon,
 }: FloatingMenuComponentProps) {
-    const [isActive, setIsActive] = useState<boolean>(true);
+    const [isActive, setIsActive] = useState<boolean>(false);
 
     return (
         <div className={`relative`}>

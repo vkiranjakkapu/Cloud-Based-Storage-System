@@ -1,7 +1,7 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import IconComponent, { type IconThemes } from "../components/IconComponent";
+import IconComponent, { type IconThemes } from "../IconComponent";
 import type { Pagination } from "./usePagination";
-import InputComponent from "../components/form/InputComponent";
+import InputComponent from "../form/InputComponent";
 
 export interface PaginationButtonsProps<T> extends Omit<
     Pagination<T>,

@@ -15,7 +15,7 @@ import {
 import { FolderIcon } from "@heroicons/react/24/solid";
 import InputComponent from "../../components/form/InputComponent";
 import IconComponent from "../../components/IconComponent";
-import DashboardLayout from "../../components/layouts/dashboard/DashboardLayout";
+import DashboardLayout from "../../components/layouts/DashboardLayout";
 import DividerComponent from "../../components/nav/DividerComponent";
 import FocusMenu from "../../components/nav/FocusMenu";
 import FolderDetails from "./FolderDetails";

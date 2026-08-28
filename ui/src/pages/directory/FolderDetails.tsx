@@ -3,14 +3,18 @@ import {
     FolderPlusIcon,
     TrashIcon,
 } from "@heroicons/react/16/solid";
+import { ListBulletIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
 import { PencilIcon, ShareIcon } from "@heroicons/react/24/solid";
+import { useState } from "react";
 import { FolderComponent } from "../../components/directories/FolderComponent";
 import IconComponent from "../../components/IconComponent";
 import DuoFolderIcon from "../../components/icons/DuoFolderIcon";
-import DashboardSectionLayout from "../../components/layouts/dashboard/DashboardSectionLayout";
+import SectionLayout from "../../components/layouts/SectionLayout";
 import FilesList from "./FilesList";
 
 export default function FolderDetails() {
+    const [iconView, setIconView] = useState<boolean>(true);
+
     return (
         <section
             className={`
@@ -53,7 +57,7 @@ export default function FolderDetails() {
             </div>
 
             {/* Folders Section */}
-            <DashboardSectionLayout
+            <SectionLayout
                 // title="3 Folders"
                 breadCrumbs={[
                     { text: "Documents" },
@@ -61,24 +65,21 @@ export default function FolderDetails() {
                     { text: "Internship" },
                 ]}
                 description="3 Folders"
-                actionButtons={[
+                actionElements={[
                     {
-                        type: "button",
-                        props: {
+                        button: {
                             icon: DocumentPlusIcon,
                             text: "New File",
                         },
                     },
                     {
-                        type: "button",
-                        props: {
+                        button: {
                             icon: FolderPlusIcon,
                             text: "New Folder",
                         },
                     },
                     {
-                        type: "icon",
-                        props: {
+                        icon: {
                             icon: ShareIcon,
                             customise: "p-2 size-8 shadow-md sm:hidden",
                             theme: "primary",
@@ -124,24 +125,39 @@ export default function FolderDetails() {
                     <FolderComponent />
                     <FolderComponent />
                 </div>
-            </DashboardSectionLayout>
+            </SectionLayout>
 
             {/* Files Section */}
-            <DashboardSectionLayout
+            <SectionLayout
                 title="Labmantix"
                 description="21 Files"
-                actionButtons={[
+                actionElements={[
                     {
-                        type: "button",
-                        props: {
+                        button: {
                             icon: DocumentPlusIcon,
                             text: "New Files",
+                        },
+                    },
+                    {
+                        iconGroup: {
+                            buttons: [
+                                {
+                                    icon: Squares2X2Icon,
+                                    active: iconView,
+                                    onClick: () => setIconView(!iconView),
+                                },
+                                {
+                                    icon: ListBulletIcon,
+                                    active: !iconView,
+                                    onClick: () => setIconView(!iconView),
+                                },
+                            ],
                         },
                     },
                 ]}
             >
                 <FilesList />
-            </DashboardSectionLayout>
+            </SectionLayout>
         </section>
     );
 }

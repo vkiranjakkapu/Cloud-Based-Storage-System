@@ -67,16 +67,19 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
             <div
                 className={`flex flex-1 flex-col h-full w-full ${focusMenu ? "md:pl-80" : "md:pl-[3.45rem]"}`}
             >
-                {/* Top Sticky Header for Mobile */}
-                <header className="flex h-16 items-center justify-between border-b px-4 md:hidden border-gray-200 bg-white dark:border-secondary-dark dark:bg-secondary">
+                {/* Mobile Menu */}
+                <header className="flex flex-wrap h-16 items-center justify-between border-b px-4 md:hidden border-gray-200 bg-white dark:border-secondary-dark dark:bg-secondary">
                     <img
                         src={FavIcon}
                         alt="IMS"
                         width="40px"
                         className="rounded-lg shadow-sm border border-primary"
                     />
-                    <h1 className="text-center text-lg font-semibold text-secondary dark:text-cool">
+                    <h1 className="hidden sm:block text-center text-lg font-semibold text-secondary dark:text-cool">
                         Cloud Based Storage System
+                    </h1>
+                    <h1 className="sm:hidden text-center text-lg font-semibold text-secondary dark:text-cool">
+                        CBSS
                     </h1>
                     <div className="space-x-2">
                         <IconComponent
