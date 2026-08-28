@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import SidebarLayout from "./SidebarLayout";
+import SidebarLayout from "../SidebarLayout";
 
 export type DashboardLayoutProps = {
     children: [ReactNode, ReactNode?];

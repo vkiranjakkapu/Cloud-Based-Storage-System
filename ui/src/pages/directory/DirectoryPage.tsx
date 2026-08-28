@@ -15,17 +15,17 @@ import {
 import { FolderIcon } from "@heroicons/react/24/solid";
 import InputComponent from "../../components/form/InputComponent";
 import IconComponent from "../../components/IconComponent";
-import DashboardLayout from "../../components/layouts/DashboardLayout";
+import DashboardLayout from "../../components/layouts/dashboard/DashboardLayout";
 import DividerComponent from "../../components/nav/DividerComponent";
 import FocusMenu from "../../components/nav/FocusMenu";
-import FolderDetailsPage from "./FolderDetailsPage";
+import FolderDetails from "./FolderDetails";
 
 export default function DirectoryPage() {
     return (
         <DashboardLayout override={true}>
             {[
                 <div className="">
-                    <FolderDetailsPage />
+                    <FolderDetails />
                 </div>,
 
                 // Focus Menu

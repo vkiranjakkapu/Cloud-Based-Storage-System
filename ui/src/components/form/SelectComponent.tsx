@@ -7,7 +7,7 @@ import FieldComponent from "./FieldComponent";
 import type { LabelComponentProps } from "./FieldLabelComponent";
 import FieldLabelComponent from "./FieldLabelComponent";
 
-interface SelectComponentProps extends SelectHTMLAttributes<HTMLSelectElement> {
+export interface SelectComponentProps extends SelectHTMLAttributes<HTMLSelectElement> {
     children?: ReactNode;
     id: string;
     options: OptionComponentProps[];

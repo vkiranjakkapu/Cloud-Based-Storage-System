@@ -3,7 +3,7 @@ import FieldComponent from "./FieldComponent";
 import type { LabelComponentProps } from "./FieldLabelComponent";
 import FieldLabelComponent from "./FieldLabelComponent";
 
-interface InputComponentProps extends InputHTMLAttributes<HTMLInputElement> {
+export interface InputComponentProps extends InputHTMLAttributes<HTMLInputElement> {
     children?: ReactNode;
     id: string;
     customise?: string;

@@ -1,38 +1,51 @@
+import type { HTMLAttributes } from "react";
 import type { IconProps } from "./Commons";
 
-export type IconComponentProps = {
+export type IconThemes =
+    | "primary"
+    | "primary-blur"
+    | "secondary"
+    | "secondary-blur"
+    | "blur"
+    | "";
+
+export type IconComponentProps = HTMLAttributes<HTMLDivElement> & {
     icon?: IconProps;
     text?: string;
-    theme?:
-        | "primary"
-        | "primary-blur"
-        | "secondary"
-        | "secondary-blur"
-        | "blur"
-        | "";
+    theme?: IconThemes;
     customise?: string;
     hoverEffect?: string;
     customiseIcon?: string;
     customiseText?: string;
+    disabled?: boolean;
     onClick?: () => void;
 };
 
 export default function IconComponent({
-    icon,
+    icon: Icon,
     text,
     theme,
-    customiseIcon,
-    customiseText,
     customise,
     hoverEffect,
+    customiseIcon,
+    customiseText,
+    disabled = false,
     onClick,
+    ...props
 }: IconComponentProps) {
-    const Icon = icon;
-
     return (
         <div
-            className={`cursor-pointer relative rounded-full overflow-hidden inline-flex items-center justify-center ${customise ?? "size-9.5"}`}
-            onClick={onClick}
+            className={`relative cursor-pointer rounded-full overflow-hidden 
+                        inline-flex items-center justify-center
+                        ${customise ?? "size-9.5"}
+                        ${
+                            disabled &&
+                            `pointer-events-none cursor-not-allowed 
+                            *:pointer-events-none *:cursor-not-allowed 
+                            opacity-70`
+                        }`}
+            onClick={disabled ? () => {} : onClick}
+            {...props}
         >
             {theme === "primary" ? (
                 <>

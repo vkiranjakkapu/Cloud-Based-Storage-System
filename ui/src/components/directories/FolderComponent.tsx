@@ -9,13 +9,17 @@ import { useState } from "react";
 import IconComponent from "../IconComponent";
 import DuoFolderIcon from "../icons/DuoFolderIcon";
 
-export function FolderComponent() {
+type FolderComponentProps = {
+    folder?: unknown;
+};
+
+export function FolderComponent({ folder }: FolderComponentProps) {
     const [isActive, setIsActive] = useState<boolean>(false);
 
     return (
         <div
-            className={`text-center relative p-2 rounded-xl cursor-pointer
-                
+            className={`text-center relative p-2 rounded-xl cursor-pointer 
+
                 ${
                     isActive &&
                     `backdrop-blur-lg
@@ -71,6 +75,7 @@ export function FolderComponent() {
             />
             <div className="text-sm min-w-0">
                 <h2 className="w-full truncate block font-medium">
+                    {JSON.stringify(folder)}
                     Labmantix Projects
                 </h2>
                 <span className="text-xs opacity-60">2 items</span>
