@@ -10,85 +10,109 @@ import {
     Squares2X2Icon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import FileComponent from "../../components/directories/FileComponent";
 import DashboardSection from "../../components/layouts/DashboardSection";
 import usePagination from "../../components/pagination/usePagination";
 import TableComponent from "../../components/TableComponent";
-import { RoutePaths } from "../../routes/RoutePaths";
 
 export interface MetaFile {
     id: number;
-    value: string;
-    created: unknown;
+    fileName: string;
+    size: string;
+    uploaded: unknown;
 }
 
 export default function FilesList() {
-    const navigate = useNavigate();
-
-    const [iconView, setIconView] = useState<boolean>(false);
+    const [iconView, setIconView] = useState<boolean>(true);
 
     const allFiles = useState<MetaFile[]>([
         {
             id: 1,
-            value: "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            created: new Date().toISOString(),
+            fileName:
+                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
+            size: "2 MB",
+            uploaded: new Date().toISOString(),
         },
         {
             id: 2,
-            value: "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            created: new Date().toISOString(),
+            fileName:
+                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
+            size: "2 MB",
+            uploaded: new Date().toISOString(),
         },
         {
             id: 3,
-            value: "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            created: new Date().toISOString(),
+            fileName:
+                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
+            size: "2 MB",
+            uploaded: new Date().toISOString(),
         },
         {
             id: 4,
-            value: "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            created: new Date().toISOString(),
+            fileName:
+                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
+            size: "2 MB",
+            uploaded: new Date().toISOString(),
         },
         {
             id: 5,
-            value: "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            created: new Date().toISOString(),
+            fileName:
+                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
+            size: "2 MB",
+            uploaded: new Date().toISOString(),
         },
         {
             id: 6,
-            value: "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            created: new Date().toISOString(),
+            fileName:
+                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
+            size: "2 MB",
+            uploaded: new Date().toISOString(),
         },
         {
             id: 7,
-            value: "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            created: new Date().toISOString(),
+            fileName:
+                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
+            size: "2 MB",
+            uploaded: new Date().toISOString(),
         },
         {
             id: 8,
-            value: "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            created: new Date().toISOString(),
+            fileName:
+                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
+            size: "2 MB",
+            uploaded: new Date().toISOString(),
         },
         {
             id: 9,
-            value: "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            created: new Date().toISOString(),
+            fileName:
+                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
+            size: "2 MB",
+            uploaded: new Date().toISOString(),
         },
         {
             id: 10,
-            value: "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            created: new Date().toISOString(),
+            fileName:
+                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
+            size: "2 MB",
+            uploaded: new Date().toISOString(),
         },
         {
             id: 11,
-            value: "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            created: new Date().toISOString(),
+            fileName:
+                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
+            size: "2 MB",
+            uploaded: new Date().toISOString(),
         },
         {
             id: 12,
-            value: "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            created: new Date().toISOString(),
+            fileName:
+                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
+            size: "2 MB",
+            uploaded: new Date().toISOString(),
         },
     ]);
+
+    const [itemsPerPage, setItemsPerPage] = useState<number>(10);
     const {
         currentItems,
         currentPage,
@@ -96,10 +120,12 @@ export default function FilesList() {
         goToNextPage,
         changePage,
         goToPrevPage,
-    } = usePagination<MetaFile>(allFiles[0], 6);
+    } = usePagination<MetaFile>(allFiles[0], itemsPerPage);
 
     const [queryString, setQueryString] = useState<string | null>(null);
     console.log(queryString);
+
+    const [activeFile, setActiveFile] = useState<MetaFile | null>(null);
 
     return (
         <DashboardSection
@@ -119,12 +145,18 @@ export default function FilesList() {
                                 {
                                     icon: Squares2X2Icon,
                                     active: iconView,
-                                    onClick: () => setIconView(true),
+                                    onClick: () => {
+                                        setIconView(true);
+                                        setItemsPerPage(10);
+                                    },
                                 },
                                 {
                                     icon: ListBulletIcon,
                                     active: !iconView,
-                                    onClick: () => setIconView(false),
+                                    onClick: () => {
+                                        setIconView(false);
+                                        setItemsPerPage(6);
+                                    },
                                 },
                             ],
                         },
@@ -132,68 +164,93 @@ export default function FilesList() {
                 ],
             }}
         >
-            <TableComponent
-                // headers={[]}
-                body={currentItems}
-                actionEvents={[
-                    {
-                        title: "Navigate",
-                        navigation: {
-                            text: "open",
-                            onClick: (item) => {
-                                console.log(item);
-
-                                navigate(
-                                    RoutePaths.FOLDER.replace(
-                                        ":folder",
-                                        item.id + "",
-                                    ),
-                                );
+            {iconView ? (
+                <DashboardSection
+                    search={{
+                        id: "searchFiles",
+                        placeholder: "Filename",
+                        customise: "w-full md:w-3/5 lg:w-3/4",
+                        label: { icon: DocumentTextIcon },
+                        onChange: (e) => {
+                            setQueryString(e.target.value);
+                        },
+                    }}
+                    pagination={{
+                        totalPages,
+                        currentPage,
+                        goToNextPage,
+                        goToPrevPage,
+                        changePage,
+                        theme: "primary",
+                    }}
+                >
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
+                        {currentItems.map((file) => {
+                            return (
+                                <FileComponent
+                                    key={file.id}
+                                    file={file}
+                                    isActive={activeFile?.id === file.id}
+                                    onActiveChange={(file) =>
+                                        setActiveFile(file)
+                                    }
+                                    handleInfoClick={(file) => {
+                                        console.log(file);
+                                    }}
+                                />
+                            );
+                        })}
+                    </div>
+                </DashboardSection>
+            ) : (
+                <TableComponent
+                    // headers={[]}
+                    noHeader={true}
+                    body={currentItems}
+                    actionEvents={[
+                        {
+                            title: "Manage",
+                            dropdown: {
+                                type: "icon",
+                                props: {
+                                    theme: "secondary-blur",
+                                },
+                                items: [
+                                    {
+                                        icon: PencilIcon,
+                                        text: "Rename",
+                                    },
+                                    {
+                                        icon: TrashIcon,
+                                        text: "Delete",
+                                    },
+                                    {
+                                        icon: ShareIcon,
+                                        text: "Share",
+                                    },
+                                ],
                             },
                         },
-                    },
-                    {
-                        title: "Manage",
-                        dropdown: {
-                            type: "icon",
-                            props: {
-                                theme: "secondary-blur",
-                            },
-                            items: [
-                                {
-                                    icon: PencilIcon,
-                                    text: "Rename",
-                                },
-                                {
-                                    icon: TrashIcon,
-                                    text: "Delete",
-                                },
-                                {
-                                    icon: ShareIcon,
-                                    text: "Share",
-                                },
-                            ],
+                    ]}
+                    search={{
+                        id: "searchFiles",
+                        placeholder: "Filename",
+                        customise: "w-full md:w-3/5 lg:w-3/4",
+                        label: { icon: DocumentTextIcon },
+                        onChange: (e) => {
+                            setQueryString(e.target.value);
                         },
-                    },
-                ]}
-                search={{
-                    id: "searchFiles",
-                    placeholder: "Filename",
-                    customise: "w-full md:w-3/5",
-                    label: { icon: DocumentTextIcon },
-                    onChange: (e) => {
-                        setQueryString(e.target.value);
-                    },
-                }}
-                pagination={{
-                    totalPages,
-                    currentPage,
-                    goToNextPage,
-                    goToPrevPage,
-                    changePage,
-                    theme: "primary",
-                }}
-            />
+                    }}
+                    pagination={{
+                        totalPages,
+                        currentPage,
+                        goToNextPage,
+                        goToPrevPage,
+                        changePage,
+                        theme: "primary",
+                    }}
+                />
+            )}
         </DashboardSection>
     );
 }

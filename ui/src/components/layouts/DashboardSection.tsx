@@ -44,13 +44,14 @@ export default function DashboardSection<T>({
     return (
         <div
             className={`
+                *:not-last:flex-1
                 *:not-last:flex *:not-last:flex-wrap 
                 *:not-last:justify-between 
                 *:not-last:items-center 
-                *:not-last:gap-3
+                *:not-last:gap-2 
 
-                *:not-last:pb-3
-                space-y-3
+                *:not-last:pb-2
+                space-y-2
                 divide-y divide-slate-200 dark:divide-cool/15
             `}
         >

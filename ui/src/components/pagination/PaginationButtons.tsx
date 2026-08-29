@@ -27,7 +27,7 @@ export function PaginationButtons<T>({
     }
 
     return (
-        <div className={`space-y-2 text-start md:text-end ${customise}`}>
+        <div className={`space-y-2 text-end ${customise}`}>
             <ButtonGroupComponent
                 theme={theme}
                 customise={`w-fit ml-auto border-${theme.split("-")[0]}/10!`}

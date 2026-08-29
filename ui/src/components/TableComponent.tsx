@@ -9,6 +9,7 @@ import { renderCellValue } from "./Commons";
 
 export type TableComponentProps<T> = TableHTMLAttributes<HTMLTableElement> & {
     headers?: HeaderAlias<T>[];
+    noHeader?: boolean;
     body: T[];
     actionEvents?: {
         title: string;
@@ -26,6 +27,7 @@ export type HeaderAlias<T> = {
 
 export default function TableComponent<T>({
     headers,
+    noHeader,
     body,
     actionEvents,
     search,
@@ -61,7 +63,7 @@ export default function TableComponent<T>({
                     [&_tr>*:last-child:not(.fullSpan)]:text-end
                 `}
                 >
-                    {body.length > 0 && (
+                    {!noHeader && body.length > 0 && (
                         <thead
                             className={`
                                 text-xs font-semibold uppercase tracking-wider 
@@ -92,7 +94,16 @@ export default function TableComponent<T>({
                             <tr key={"tb" + idx}>
                                 {cols.map((column) => {
                                     return (
-                                        <td key={String(column.key)}>
+                                        <td
+                                            key={String(column.key)}
+                                            className={
+                                                (
+                                                    column.key as string
+                                                ).toLowerCase() === "filename"
+                                                    ? `max-w-[20ch] truncate`
+                                                    : ``
+                                            }
+                                        >
                                             {renderCellValue(
                                                 String(item[column.key]),
                                             )}
