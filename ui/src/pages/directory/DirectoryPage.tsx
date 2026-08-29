@@ -1,7 +1,10 @@
 import {
     ChevronRightIcon,
+    DocumentPlusIcon,
+    FolderPlusIcon,
     MagnifyingGlassIcon,
     PhotoIcon,
+    TrashIcon,
 } from "@heroicons/react/16/solid";
 import {
     ChevronDownIcon,
@@ -12,21 +15,92 @@ import {
     SpeakerWaveIcon,
     VideoCameraIcon,
 } from "@heroicons/react/24/outline";
-import { FolderIcon } from "@heroicons/react/24/solid";
+import { FolderIcon, PencilIcon, ShareIcon } from "@heroicons/react/24/solid";
+import { FolderComponent } from "../../components/directories/FolderComponent";
 import InputComponent from "../../components/form/InputComponent";
 import IconComponent from "../../components/IconComponent";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
+import DashboardSection from "../../components/layouts/DashboardSection";
+import IconHeaderLayout from "../../components/layouts/IconHeaderLayout";
 import DividerComponent from "../../components/nav/DividerComponent";
 import FocusMenu from "../../components/nav/FocusMenu";
-import FolderDetails from "./FolderDetails";
+import FilesList from "./FilesList";
 
 export default function DirectoryPage() {
     return (
         <DashboardLayout override={true}>
             {[
-                <div className="">
-                    <FolderDetails />
-                </div>,
+                // Folders
+                <IconHeaderLayout
+                    title="Documents"
+                    description="3 folders and 48 files in category"
+                    actionButtons={[{ theme: "primary", icon: ShareIcon }]}
+                >
+                    {/* Folders Section */}
+                    <DashboardSection
+                        header={{
+                            // title:"3 Folders",
+                            breadCrumbs: [
+                                { text: "Documents" },
+                                { text: "Projects" },
+                                { text: "Internship" },
+                            ],
+                            description: "3 Folders",
+                            actionElements: [
+                                {
+                                    button: {
+                                        icon: DocumentPlusIcon,
+                                        text: "New File",
+                                    },
+                                },
+                                {
+                                    button: {
+                                        icon: FolderPlusIcon,
+                                        text: "New Folder",
+                                    },
+                                },
+                                {
+                                    icon: {
+                                        icon: ShareIcon,
+                                        customise:
+                                            "p-2 size-8 shadow-md sm:hidden",
+                                        theme: "primary",
+                                    },
+                                },
+                                {
+                                    dropdown: {
+                                        type: "icon",
+                                        props: {
+                                            theme: "primary",
+                                            customise: "p-2 shadow-sm",
+                                        },
+                                        items: [
+                                            {
+                                                // text: "Rename",
+                                                icon: PencilIcon,
+                                                title: "Rename Folder",
+                                                onClick: () => {},
+                                            },
+                                            {
+                                                // text: "Delete",
+                                                icon: TrashIcon,
+                                                title: "Delete Folder",
+                                                onClick: () => {},
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        }}
+                    >
+                        <div className="max-h-100 overflow-scroll grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+                            <FolderComponent />
+                        </div>
+                    </DashboardSection>
+
+                    {/* Files Section */}
+                    <FilesList />
+                </IconHeaderLayout>,
 
                 // Focus Menu
                 <FocusMenu>

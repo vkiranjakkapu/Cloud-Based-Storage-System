@@ -68,7 +68,11 @@ export default function Sidebar({
     ];
 
     return (
-        <div className="flex flex-row h-full divide-x divide-slate-300 dark:divide-cool/30">
+        <div
+            className={`
+            flex flex-row h-full divide-x
+        `}
+        >
             {/* Menu */}
             <nav
                 className={`flex p-2 py-3 flex-col gap-2 items-center justify-between`}
@@ -145,7 +149,7 @@ export default function Sidebar({
 
             {/* Focus Menu */}
             {children && (
-                <nav className="flex-1 flex flex-col items-center *:p-2.5 *:space-y-3 divide-y divide-slate-300 dark:divide-cool/30">
+                <nav className="flex-1 flex flex-col items-center *:p-2.5 *:space-y-3 divide-y">
                     {/* Page Title */}
                     <div className="w-full space-y-3">
                         <div className="inline-flex gap-2 justify-between items-center w-full">

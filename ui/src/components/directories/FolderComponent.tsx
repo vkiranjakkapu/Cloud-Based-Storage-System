@@ -7,7 +7,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import IconComponent from "../IconComponent";
-import DuoFolderIcon from "../icons/DuoFolderIcon";
+import DuoFolderSvgIcon from "../icons/DuoFolderIcon";
 
 type FolderComponentProps = {
     folder?: unknown;
@@ -69,7 +69,7 @@ export function FolderComponent({ folder }: FolderComponentProps) {
                     />
                 </div>
             </div>
-            <DuoFolderIcon
+            <DuoFolderSvgIcon
                 className="folder size-20 mx-auto text-secondary-light dark:text-warm"
                 shadowColor="text-white dark:text-white/30"
             />

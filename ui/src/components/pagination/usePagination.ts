@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-export interface Pagination<T> {
+export interface PaginationProps<T> {
     currentPage: number;
     totalPages: number;
     currentItems: T[];
@@ -12,7 +12,7 @@ export interface Pagination<T> {
 export default function usePagination<T>(
     items: T[],
     itemsPerPage: number = 10,
-): Pagination<T> {
+): PaginationProps<T> {
     const [rawPage, setRawPage] = useState<number>(1);
 
     // Compute total pages on the fly

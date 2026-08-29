@@ -37,7 +37,7 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
     };
 
     return (
-        <div className="flex h-screen w-full overflow-hidden transition-colors duration-300">
+        <main className="flex h-screen w-full overflow-visible transition-colors duration-300">
             {isOpen && (
                 <div
                     className="fixed inset-0 z-40 bg-cool/20 backdrop-blur-sm md:hidden"
@@ -49,8 +49,11 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
 					fixed inset-y-0 left-0 z-50 flex flex-col ${focusMenu ? "w-80" : ""}
                     transition-transform duration-300 ease-in-out
                     rounded-e-xl overflow-hidden
+
 				  bg-white/50 dark:bg-secondary/50 backdrop-blur-lg
-					border-r border-slate-200 dark:border-cool/30
+					border-r border-slate-200 dark:border-cool/15
+                    **:divide-slate-300 **:dark:divide-cool/15
+
 					md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}
 				`}
             >
@@ -65,10 +68,10 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
 
             {/* RIGHT VIEWPORT VIEW CANVAS */}
             <div
-                className={`flex flex-1 flex-col h-full w-full ${focusMenu ? "md:pl-80" : "md:pl-[3.45rem]"}`}
+                className={`flex flex-col w-full ${focusMenu ? "md:pl-80" : "md:pl-[3.45rem]"}`}
             >
                 {/* Mobile Menu */}
-                <header className="flex flex-wrap h-16 items-center justify-between border-b px-4 md:hidden border-gray-200 bg-white dark:border-secondary-dark dark:bg-secondary">
+                <header className="md:hidden flex flex-wrap h-16 items-center justify-between border-b px-4 border-gray-200 bg-white dark:border-secondary-dark dark:bg-secondary">
                     <img
                         src={FavIcon}
                         alt="IMS"
@@ -94,7 +97,7 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
                 </header>
 
                 {/* Main Context Canvas View */}
-                <main className="flex-1 p-6 overflow-y-auto">
+                <div className="flex-1 p-6 overflow-x-clip overflow-y-auto">
                     {dashboard ?? (
                         <>
                             <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -102,8 +105,8 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
                             </h1>
                         </>
                     )}
-                </main>
+                </div>
             </div>
-        </div>
+        </main>
     );
 }

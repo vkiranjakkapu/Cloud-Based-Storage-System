@@ -36,7 +36,7 @@ export default function IconComponent({
     return (
         <div
             className={`relative cursor-pointer rounded-full overflow-hidden 
-                        inline-flex items-center justify-center
+                        flex items-center justify-center
                         ${customise ?? "size-9.5"}
                         ${
                             disabled &&

@@ -1,13 +1,18 @@
 import DashboardLayout from "../../components/layouts/DashboardLayout";
-import SectionLayout from "../../components/layouts/SectionLayout";
+import DashboardSection from "../../components/layouts/DashboardSection";
 
 export default function Dashboard() {
     return (
         <DashboardLayout>
             {[
-                <SectionLayout title="Dashboard" description="Welcome back, user.">
+                <DashboardSection
+                    header={{
+                        title: "Dashboard",
+                        description: "Welcome back, user.",
+                    }}
+                >
                     <h1>Dashboard </h1>
-                </SectionLayout>,
+                </DashboardSection>,
             ]}
         </DashboardLayout>
     );
