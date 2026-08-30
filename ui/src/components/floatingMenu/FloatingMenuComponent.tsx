@@ -1,34 +1,49 @@
 import { EllipsisVerticalIcon, XMarkIcon } from "@heroicons/react/16/solid";
-import { useEffect, useRef, useState } from "react";
+import {
+    useEffect,
+    useRef,
+    useState,
+    type Dispatch,
+    type SetStateAction,
+} from "react";
 import { createPortal } from "react-dom";
 import type { IconProps } from "../Commons";
-import IconComponent, { type IconComponentProps } from "../IconComponent";
+import IconComponent, {
+    type IconComponentProps,
+    type IconThemes,
+} from "../IconComponent";
 import type { MenuItem } from "./FloatingMenu";
 import FloatingMenu from "./FloatingMenu";
 
 /**
- * For type: 'text', 'props.text' is the display text
+ * For type: 'text', 'props.text' is the display text,
+ * If 'icon' Use 'props.menutheme' to set theme for menu items.
+ * For menu alignment, use 'props.menualignment'.
  */
-export type FloatingMenuComponentProps = {
+export type FloatingMenuComponentProps<T> = {
     type: "icon" | "text";
-    items: MenuItem[];
-    props?: IconComponentProps;
+    items: MenuItem<T>[];
+    props?: IconComponentProps & {
+        menutheme?: IconThemes;
+    };
+    alignment?: "left" | "bottom";
     useIcon?: IconProps;
 
     menuId?: string;
     activeMenu?: string | null;
-    setActiveMenu?: React.Dispatch<React.SetStateAction<string | null>>;
+    setActiveMenu?: Dispatch<SetStateAction<string | null>>;
 };
 
-export default function FloatingMenuComponent({
-    type,
+export default function FloatingMenuComponent<T>({
+    type = "icon",
     items,
     props,
+    alignment = "bottom",
     useIcon,
     menuId,
     activeMenu,
     setActiveMenu,
-}: FloatingMenuComponentProps) {
+}: FloatingMenuComponentProps<T>) {
     const [localActive, setLocalActive] = useState(false);
 
     const isControlled =
@@ -56,8 +71,14 @@ export default function FloatingMenuComponent({
             const menu = menuRef.current.getBoundingClientRect();
 
             setMenuPosition({
-                top: parent.bottom + 4,
-                left: parent.right - menu.width,
+                top:
+                    type === "icon" && alignment === "left"
+                        ? parent.top + (parent.height - menu.height) / 2
+                        : parent.bottom + 4,
+                left:
+                    type === "icon" && alignment === "left"
+                        ? parent.left - menu.width - 4
+                        : parent.right - menu.width,
             });
         };
 
@@ -70,7 +91,7 @@ export default function FloatingMenuComponent({
             window.removeEventListener("scroll", updatePosition, true);
             window.removeEventListener("resize", updatePosition);
         };
-    }, []);
+    }, [type, alignment]);
 
     const toggleMenu = () => {
         if (isControlled) {
@@ -89,8 +110,8 @@ export default function FloatingMenuComponent({
             transition-all duration-200 ease-in-out
             ${
                 isActive
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 pointer-events-none -translate-y-2"
+                    ? `opacity-100 ${alignment === "bottom" ? "translate-y-0" : "translate-x-0"}`
+                    : `opacity-0 pointer-events-none ${alignment === "bottom" ? "-translate-y-2" : "translate-x-2"}`
             }
         `}
             style={{
@@ -99,36 +120,53 @@ export default function FloatingMenuComponent({
                 transformOrigin: "top right",
             }}
         >
-            <FloatingMenu items={items} />
+            <FloatingMenu
+                items={items}
+                theme={props?.menutheme}
+                alignment={alignment}
+            />
         </div>
     );
 
     return (
         <>
-            <div className="relative w-fit">
+            <div
+                className="relative w-fit"
+                onClick={(e) => e.stopPropagation()}
+            >
                 <div
                     ref={parentRef}
                     className="relative z-2 cursor-pointer p-0.5"
                 >
                     {type === "text" ? (
                         <IconComponent
-                            customiseIcon="size-4"
+                            {...{
+                                ...props,
+                                menutheme: props?.menutheme + "",
+                            }}
+                            customiseIcon={`size-4 ${props?.customiseIcon}`}
                             onClick={toggleMenu}
-                            {...props}
                         />
                     ) : (
                         type === "icon" && (
                             <IconComponent
-                                theme={isActive ? "primary" : "secondary-blur"}
-                                customise="size-8"
+                                {...{
+                                    ...props,
+                                    menutheme: props?.menutheme + "",
+                                }}
+                                theme={
+                                    isActive
+                                        ? "primary"
+                                        : (props?.theme ?? "secondary-blur")
+                                }
+                                customise={`size-8 ${props?.customise}`}
                                 icon={
                                     isActive
                                         ? XMarkIcon
                                         : (useIcon ?? EllipsisVerticalIcon)
                                 }
-                                customiseIcon="size-4"
+                                customiseIcon={`size-4 ${props?.customiseIcon}`}
                                 onClick={toggleMenu}
-                                {...props}
                             />
                         )
                     )}

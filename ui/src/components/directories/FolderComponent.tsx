@@ -23,9 +23,9 @@ export function FolderComponent({ folder }: FolderComponentProps) {
                 ${
                     isActive &&
                     `backdrop-blur-lg
-                bg-slate-200/60 dark:bg-secondary-dark/50
-                [&>.folder]:text-primary [&>.folder]:scale-105
-                [&>.menu]:visible`
+                    bg-slate-200/60 dark:bg-secondary-dark/50
+                    [&>.folder]:text-primary [&>.folder]:scale-105
+                    [&>.menu]:visible`
                 }
                 
                 hover:backdrop-blur-lg
@@ -47,23 +47,24 @@ export function FolderComponent({ folder }: FolderComponentProps) {
             <div className="absolute z-1 right-0 pr-1">
                 <div
                     className={`flex flex-col gap-1 
-                    *:transition-all *:duration-150`}
+                        *:transition-all *:duration-150
+                    `}
                 >
                     <IconComponent
                         customise={`size-6.5 ${isActive ? "translate-y-7.5" : "invisible pointer-events-none"}`}
-                        theme="secondary-blur"
+                        theme={`secondary-blur`}
                         icon={PencilIcon}
                         customiseIcon="size-3.5"
                     />
                     <IconComponent
                         customise={`size-6.5 duration-300! ${isActive ? "translate-y-7.5" : "-translate-y-7.5 invisible pointer-events-none"}`}
-                        theme="secondary-blur"
+                        theme={`secondary-blur`}
                         icon={ShareIcon}
                         customiseIcon="size-3.5"
                     />
                     <IconComponent
                         customise={`size-6.5 duration-450! ${isActive ? "translate-y-7.5" : "-translate-y-15 invisible pointer-events-none"}`}
-                        theme="secondary-blur"
+                        theme={`secondary-blur`}
                         icon={TrashIcon}
                         customiseIcon="size-3.5"
                     />

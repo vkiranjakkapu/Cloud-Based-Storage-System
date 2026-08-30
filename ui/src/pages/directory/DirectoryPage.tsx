@@ -1,21 +1,21 @@
 import {
-    ChevronRightIcon,
-    DocumentPlusIcon,
-    FolderPlusIcon,
-    MagnifyingGlassIcon,
-    PhotoIcon,
-    TrashIcon,
-} from "@heroicons/react/16/solid";
-import {
     ChevronDownIcon,
+    ChevronRightIcon,
     DocumentDuplicateIcon,
+    DocumentPlusIcon,
     DocumentTextIcon,
     EllipsisHorizontalIcon,
+    FolderIcon,
     FolderOpenIcon,
-    SpeakerWaveIcon,
-    VideoCameraIcon,
+    FolderPlusIcon,
+    InformationCircleIcon,
+    MagnifyingGlassIcon,
+    PencilIcon,
+    ShareIcon,
+    TrashIcon,
 } from "@heroicons/react/24/outline";
-import { FolderIcon, PencilIcon, ShareIcon } from "@heroicons/react/24/solid";
+import { useState } from "react";
+import FileListComponent from "../../components/directories/FileListComponent";
 import { FolderComponent } from "../../components/directories/FolderComponent";
 import InputComponent from "../../components/form/InputComponent";
 import IconComponent from "../../components/IconComponent";
@@ -24,9 +24,36 @@ import DashboardSection from "../../components/layouts/DashboardSection";
 import IconHeaderLayout from "../../components/layouts/IconHeaderLayout";
 import DividerComponent from "../../components/nav/DividerComponent";
 import FocusMenu from "../../components/nav/FocusMenu";
-import FilesList from "./FilesList";
+import FilesList, { type MetaFile } from "./FilesList";
+import sampleData from "./sampleData.json";
 
 export default function DirectoryPage() {
+    // const activeDirectory = useParams<{ folder: string }>();
+
+    const allFiles = useState<MetaFile[]>(sampleData as MetaFile[]);
+
+    const [activeFile, setActiveFile] = useState<MetaFile | null>(null);
+    console.log(activeFile);
+
+    const [activeMenu, setActiveMenu] = useState<string | null>(null);
+
+    // TODO: get file details by fileId
+    const handleFileInfoClick = (file: MetaFile) => {
+        console.log("Info of file-" + file.id);
+    };
+
+    const handleRenameFileClick = (file: MetaFile) => {
+        console.log("Rename file-" + file.id);
+    };
+
+    const handleShareFileClick = (file: MetaFile) => {
+        console.log("Share file-" + file.id);
+    };
+
+    const handleDeleteFileClick = (file: MetaFile) => {
+        console.log("Delete file-" + file.id);
+    };
+
     return (
         <DashboardLayout override={true}>
             {[
@@ -77,13 +104,13 @@ export default function DirectoryPage() {
                                         items: [
                                             {
                                                 // text: "Rename",
-                                                icon: PencilIcon,
+                                                icon: { icon: PencilIcon },
                                                 title: "Rename Folder",
                                                 onClick: () => {},
                                             },
                                             {
                                                 // text: "Delete",
-                                                icon: TrashIcon,
+                                                icon: { icon: TrashIcon },
                                                 title: "Delete Folder",
                                                 onClick: () => {},
                                             },
@@ -95,17 +122,57 @@ export default function DirectoryPage() {
                     >
                         <div className="max-h-100 overflow-scroll grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
                             <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
+                            <FolderComponent />
                         </div>
                     </DashboardSection>
 
                     {/* Files Section */}
-                    <FilesList />
+                    <FilesList
+                        files={allFiles[0]}
+                        handleInfoButtonClick={handleFileInfoClick}
+                        handleRenameFileClick={handleRenameFileClick}
+                        handleShareFileClick={handleShareFileClick}
+                        handleDeleteFileClick={handleDeleteFileClick}
+                        trackActiveFile={setActiveFile}
+                    />
                 </IconHeaderLayout>,
 
                 // Focus Menu
                 <FocusMenu>
                     {/* Folders */}
-                    <div className="container">
+                    <div className="container flex-1">
                         <DividerComponent
                             text="Categories"
                             icon={FolderOpenIcon}
@@ -217,161 +284,79 @@ export default function DirectoryPage() {
                             customiseInput="text-sm"
                         />
                         {/* Latest Files */}
-                        <div className="space-y-1 *:cursor-pointer *:hover:bg-slate-50/70 *:dark:hover:bg-secondary-dark/60">
-                            <div
-                                className={`
-                                    bg-white/70 backdrop-blur-sm dark:bg-secondary-dark rounded-lg border border-slate-200 dark:border-secondary p-1.5
-                                    grid grid-cols-[auto_1fr_auto] gap-2
-                                    *:inline-flex *:items-center *:justify-center
-                                `}
-                            >
-                                <div className="bg-slate-200/60 dark:bg-secondary rounded size-10">
-                                    <DocumentTextIcon className="size-5" />
-                                </div>
-                                <div className="flex-col items-start! min-w-0">
-                                    <h2 className="text-sm truncate w-full">
-                                        Annual Statement Annual Statement
-                                    </h2>
-                                    <span className="text-xs opacity-50">
-                                        2 MB
-                                    </span>
-                                </div>
-                                <div className="cursor-pointer group">
-                                    <EllipsisHorizontalIcon className="size-5 pointer-events-none group-hover:text-primary" />
-                                </div>
-                            </div>
-                            <div
-                                className={`
-                                    bg-white/70 backdrop-blur-sm dark:bg-secondary-dark rounded-lg border border-slate-200 dark:border-secondary p-1.5
-                                    grid grid-cols-[auto_1fr_auto] gap-2
-                                    *:inline-flex *:items-center *:justify-center
-                                `}
-                            >
-                                <div className="bg-slate-200/60 dark:bg-secondary rounded size-10">
-                                    <PhotoIcon className="size-5" />
-                                </div>
-                                <div className="flex-col items-start! min-w-0">
-                                    <h2 className="text-sm truncate w-full">
-                                        Annual Statement Annual Statement
-                                    </h2>
-                                    <span className="text-xs opacity-50">
-                                        2 MB
-                                    </span>
-                                </div>
-                                <div className="cursor-pointer group">
-                                    <EllipsisHorizontalIcon className="size-5 pointer-events-none group-hover:text-primary" />
-                                </div>
-                            </div>
-                            <div
-                                className={`
-                                    bg-white/70 backdrop-blur-sm dark:bg-secondary-dark rounded-lg border border-slate-200 dark:border-secondary p-1.5
-                                    grid grid-cols-[auto_1fr_auto] gap-2
-                                    *:inline-flex *:items-center *:justify-center
-                                `}
-                            >
-                                <div className="bg-slate-200/60 dark:bg-secondary rounded size-10">
-                                    <SpeakerWaveIcon className="size-5" />
-                                </div>
-                                <div className="flex-col items-start! min-w-0">
-                                    <h2 className="text-sm truncate w-full">
-                                        Annual Statement Annual Statement
-                                    </h2>
-                                    <span className="text-xs opacity-50">
-                                        2 MB
-                                    </span>
-                                </div>
-                                <div className="cursor-pointer group">
-                                    <EllipsisHorizontalIcon className="size-5 pointer-events-none group-hover:text-primary" />
-                                </div>
-                            </div>
-                            <div
-                                className={`
-                                    bg-white/70 backdrop-blur-sm dark:bg-secondary-dark rounded-lg border border-slate-200 dark:border-secondary p-1.5
-                                    grid grid-cols-[auto_1fr_auto] gap-2
-                                    *:inline-flex *:items-center *:justify-center
-                                `}
-                            >
-                                <div className="bg-slate-200/60 dark:bg-secondary rounded size-10">
-                                    <VideoCameraIcon className="size-5" />
-                                </div>
-                                <div className="flex-col items-start! min-w-0">
-                                    <h2 className="text-sm truncate w-full">
-                                        Annual Statement Annual Statement
-                                    </h2>
-                                    <span className="text-xs opacity-50">
-                                        2 MB
-                                    </span>
-                                </div>
-                                <div className="cursor-pointer group">
-                                    <EllipsisHorizontalIcon className="size-5 pointer-events-none group-hover:text-primary" />
-                                </div>
-                            </div>
-                            <div
-                                className={`
-                                    bg-white/70 backdrop-blur-sm dark:bg-secondary-dark rounded-lg border border-slate-200 dark:border-secondary p-1.5
-                                    grid grid-cols-[auto_1fr_auto] gap-2
-                                    *:inline-flex *:items-center *:justify-center
-                                `}
-                            >
-                                <div className="bg-slate-200/60 dark:bg-secondary rounded size-10">
-                                    <DocumentTextIcon className="size-5" />
-                                </div>
-                                <div className="flex-col items-start! min-w-0">
-                                    <h2 className="text-sm truncate w-full">
-                                        Annual Statement Annual Statement
-                                    </h2>
-                                    <span className="text-xs opacity-50">
-                                        2 MB
-                                    </span>
-                                </div>
-                                <div className="cursor-pointer group">
-                                    <EllipsisHorizontalIcon className="size-5 pointer-events-none group-hover:text-primary" />
-                                </div>
-                            </div>
-                            <div
-                                className={`
-                                    bg-white/70 backdrop-blur-sm dark:bg-secondary-dark rounded-lg border border-slate-200 dark:border-secondary p-1.5
-                                    grid grid-cols-[auto_1fr_auto] gap-2
-                                    *:inline-flex *:items-center *:justify-center
-                                `}
-                            >
-                                <div className="bg-slate-200/60 dark:bg-secondary rounded size-10">
-                                    <PhotoIcon className="size-5" />
-                                </div>
-                                <div className="flex-col items-start! min-w-0">
-                                    <h2 className="text-sm truncate w-full">
-                                        Annual Statement Annual Statement
-                                    </h2>
-                                    <span className="text-xs opacity-50">
-                                        2 MB
-                                    </span>
-                                </div>
-                                <div className="cursor-pointer group">
-                                    <EllipsisHorizontalIcon className="size-5 pointer-events-none group-hover:text-primary" />
-                                </div>
-                            </div>
-                            <div
-                                className={`
-                                    bg-white/70 backdrop-blur-sm dark:bg-secondary-dark rounded-lg border border-slate-200 dark:border-secondary p-1.5
-                                    grid grid-cols-[auto_1fr_auto] gap-2
-                                    *:inline-flex *:items-center *:justify-center
-                                `}
-                            >
-                                <div className="bg-slate-200/60 dark:bg-secondary rounded size-10">
-                                    <SpeakerWaveIcon className="size-5" />
-                                </div>
-                                <div className="flex-col items-start! min-w-0">
-                                    <h2 className="text-sm truncate w-full">
-                                        Annual Statement Annual Statement
-                                    </h2>
-                                    <span className="text-xs opacity-50">
-                                        2 MB
-                                    </span>
-                                </div>
-                                <div className="cursor-pointer group">
-                                    <EllipsisHorizontalIcon className="size-5 pointer-events-none group-hover:text-primary" />
-                                </div>
-                            </div>
+                        <div className="space-y-1">
+                            {allFiles[0].slice(0, 8).map((file, idx) => (
+                                <FileListComponent
+                                    key={idx}
+                                    file={file}
+                                    useIcon={DocumentTextIcon}
+                                    showFileSize={false}
+                                    showOwner={false}
+                                    dropdown={{
+                                        type: "icon",
+                                        useIcon: EllipsisHorizontalIcon,
+                                        props: {
+                                            theme: "secondary-blur",
+                                            // menutheme: "secondary-blur",
+                                        },
+                                        alignment: "bottom",
+                                        items: [
+                                            {
+                                                target: file,
+                                                icon: {
+                                                    icon: InformationCircleIcon,
+                                                },
+                                                text: "Info",
+                                                onClick(item) {
+                                                    handleFileInfoClick(
+                                                        item as MetaFile,
+                                                    );
+                                                },
+                                            },
+                                            {
+                                                target: file,
+                                                icon: { icon: PencilIcon },
+                                                text: "Rename",
+                                                onClick(item) {
+                                                    handleRenameFileClick(
+                                                        item as MetaFile,
+                                                    );
+                                                },
+                                            },
+                                            {
+                                                target: file,
+                                                icon: { icon: ShareIcon },
+                                                text: "Share",
+                                                onClick(item) {
+                                                    handleShareFileClick(
+                                                        item as MetaFile,
+                                                    );
+                                                },
+                                            },
+                                            {
+                                                target: file,
+                                                icon: {
+                                                    icon: TrashIcon,
+                                                    customiseIcon:
+                                                        "group-hover:text-rose-500!",
+                                                },
+                                                text: "Delete",
+                                                onClick(item) {
+                                                    handleDeleteFileClick(
+                                                        item as MetaFile,
+                                                    );
+                                                },
+                                            },
+                                        ],
+                                        menuId: `latestFile-${file.id}`,
+                                        activeMenu,
+                                        setActiveMenu,
+                                    }}
+                                    trackSelectedFile={(file) => {
+                                        setActiveFile(file);
+                                    }}
+                                />
+                            ))}
                         </div>
                     </div>
                 </FocusMenu>,

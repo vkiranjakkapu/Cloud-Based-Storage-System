@@ -1,19 +1,19 @@
 import { useState, type TableHTMLAttributes } from "react";
+import { renderCellValue } from "./Commons";
 import FloatingMenuComponent, {
     type FloatingMenuComponentProps,
 } from "./floatingMenu/FloatingMenuComponent";
 import type { InputComponentProps } from "./form/InputComponent";
 import DashboardSection from "./layouts/DashboardSection";
 import type { PaginationButtonsProps } from "./pagination/PaginationButtons";
-import { renderCellValue } from "./Commons";
 
 export type TableComponentProps<T> = TableHTMLAttributes<HTMLTableElement> & {
     headers?: HeaderAlias<T>[];
-    noHeader?: boolean;
+    enableHaeder?: boolean;
     body: T[];
     actionEvents?: {
         title: string;
-        dropdown?: FloatingMenuComponentProps;
+        dropdown?: FloatingMenuComponentProps<T>;
         navigation?: { text: string; onClick: (item: T) => void };
     }[];
     search?: InputComponentProps;
@@ -27,7 +27,7 @@ export type HeaderAlias<T> = {
 
 export default function TableComponent<T>({
     headers,
-    noHeader,
+    enableHaeder = false,
     body,
     actionEvents,
     search,
@@ -63,7 +63,7 @@ export default function TableComponent<T>({
                     [&_tr>*:last-child:not(.fullSpan)]:text-end
                 `}
                 >
-                    {!noHeader && body.length > 0 && (
+                    {!enableHaeder && body.length > 0 && (
                         <thead
                             className={`
                                 text-xs font-semibold uppercase tracking-wider 
@@ -86,9 +86,10 @@ export default function TableComponent<T>({
                     )}
                     <tbody
                         className={`
-                        divide-y divide-slate-200 transition-colors dark:divide-secondary
-                        *:hover:bg-slate-50/80 *:transition-colors *:dark:hover:bg-secondary/40
-                    `}
+                            ${!enableHaeder && ``}
+                            divide-y divide-slate-200 transition-colors dark:divide-secondary
+                            *:hover:bg-slate-50/80 *:transition-colors *:dark:hover:bg-secondary/40
+                        `}
                     >
                         {body.map((item, idx) => (
                             <tr key={"tb" + idx}>

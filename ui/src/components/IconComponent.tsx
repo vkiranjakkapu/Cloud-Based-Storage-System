@@ -18,7 +18,6 @@ export type IconComponentProps = HTMLAttributes<HTMLDivElement> & {
     customiseIcon?: string;
     customiseText?: string;
     disabled?: boolean;
-    onClick?: () => void;
 };
 
 export default function IconComponent({
@@ -44,7 +43,9 @@ export default function IconComponent({
                             *:pointer-events-none *:cursor-not-allowed 
                             opacity-70`
                         }`}
-            onClick={disabled ? () => {} : onClick}
+            onClick={(e) => {
+                onClick?.(e);
+            }}
             {...props}
         >
             {theme === "primary" ? (
@@ -58,7 +59,7 @@ export default function IconComponent({
                     ></div>
                     {Icon && (
                         <Icon
-                            className={`relative z-1 text-white pointer-events-none ${customiseIcon ?? "size-4.5"}`}
+                            className={`relative z-1 text-white pointer-events-none size-4.5 ${customiseIcon}`}
                         />
                     )}
                     {text && (
@@ -80,7 +81,7 @@ export default function IconComponent({
                     ></div>
                     {Icon && (
                         <Icon
-                            className={`relative z-1 text-primary pointer-events-none ${customiseIcon ?? "size-4.5"}`}
+                            className={`relative z-1 text-primary pointer-events-none size-4.5 ${customiseIcon}`}
                         />
                     )}
                     {text && (
@@ -102,7 +103,7 @@ export default function IconComponent({
                     ></div>
                     {Icon && (
                         <Icon
-                            className={`relative z-1 text-white dark:text-secondary pointer-events-none ${customiseIcon ?? "size-4.5"}`}
+                            className={`relative z-1 text-white dark:text-secondary pointer-events-none size-4.5 ${customiseIcon}`}
                         />
                     )}
                     {text && (
@@ -124,7 +125,7 @@ export default function IconComponent({
                     ></div>
                     {Icon && (
                         <Icon
-                            className={`relative z-1 text-secondary/70 dark:text-cool pointer-events-none ${customiseIcon ?? "size-4.5"}`}
+                            className={`relative z-1 text-secondary/70 dark:text-cool pointer-events-none size-4.5 ${customiseIcon}`}
                         />
                     )}
                     {text && (
@@ -145,7 +146,7 @@ export default function IconComponent({
                     ></div>
                     {Icon && (
                         <Icon
-                            className={`relative z-1 text-white dark:text-cool pointer-events-none ${customiseIcon ?? "size-4.5"}`}
+                            className={`relative z-1 text-white dark:text-cool pointer-events-none size-4.5 ${customiseIcon}`}
                         />
                     )}
                     {text && (
@@ -167,7 +168,7 @@ export default function IconComponent({
                     ></div>
                     {Icon && (
                         <Icon
-                            className={`relative z-1 pointer-events-none ${customiseIcon ?? "size-4.5 text-secondary/80 dark:text-cool"}`}
+                            className={`relative z-1 pointer-events-none size-4.5 text-secondary/80 dark:text-cool ${customiseIcon}`}
                         />
                     )}
                     {text && (

@@ -1,19 +1,25 @@
 import {
     DocumentPlusIcon,
-    ShareIcon,
-    TrashIcon,
-} from "@heroicons/react/16/solid";
-import {
     DocumentTextIcon,
     ListBulletIcon,
     PencilIcon,
+    ShareIcon,
     Squares2X2Icon,
+    TrashIcon,
 } from "@heroicons/react/24/outline";
-import { useState } from "react";
-import FileComponent from "../../components/directories/FileComponent";
+import {
+    useEffect,
+    useMemo,
+    useState,
+    type Dispatch,
+    type SetStateAction,
+} from "react";
+import FileIconComponent from "../../components/directories/FileIconComponent";
 import DashboardSection from "../../components/layouts/DashboardSection";
 import usePagination from "../../components/pagination/usePagination";
-import TableComponent from "../../components/TableComponent";
+
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import FileListComponent from "../../components/directories/FileListComponent";
 
 export interface MetaFile {
     id: number;
@@ -22,95 +28,45 @@ export interface MetaFile {
     uploaded: unknown;
 }
 
-export default function FilesList() {
+type FilesListProps = {
+    files: MetaFile[];
+    handleInfoButtonClick?: (file: MetaFile) => void;
+    handleRenameFileClick?: (file: MetaFile) => void;
+    handleShareFileClick?: (file: MetaFile) => void;
+    handleDeleteFileClick?: (file: MetaFile) => void;
+    trackActiveFile?: Dispatch<SetStateAction<MetaFile | null>>;
+};
+
+export default function FilesList({
+    files,
+    handleInfoButtonClick,
+    handleRenameFileClick,
+    handleShareFileClick,
+    handleDeleteFileClick,
+    trackActiveFile,
+}: FilesListProps) {
     const [iconView, setIconView] = useState<boolean>(true);
 
-    const allFiles = useState<MetaFile[]>([
-        {
-            id: 1,
-            fileName:
-                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            size: "2 MB",
-            uploaded: new Date().toISOString(),
-        },
-        {
-            id: 2,
-            fileName:
-                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            size: "2 MB",
-            uploaded: new Date().toISOString(),
-        },
-        {
-            id: 3,
-            fileName:
-                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            size: "2 MB",
-            uploaded: new Date().toISOString(),
-        },
-        {
-            id: 4,
-            fileName:
-                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            size: "2 MB",
-            uploaded: new Date().toISOString(),
-        },
-        {
-            id: 5,
-            fileName:
-                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            size: "2 MB",
-            uploaded: new Date().toISOString(),
-        },
-        {
-            id: 6,
-            fileName:
-                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            size: "2 MB",
-            uploaded: new Date().toISOString(),
-        },
-        {
-            id: 7,
-            fileName:
-                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            size: "2 MB",
-            uploaded: new Date().toISOString(),
-        },
-        {
-            id: 8,
-            fileName:
-                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            size: "2 MB",
-            uploaded: new Date().toISOString(),
-        },
-        {
-            id: 9,
-            fileName:
-                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            size: "2 MB",
-            uploaded: new Date().toISOString(),
-        },
-        {
-            id: 10,
-            fileName:
-                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            size: "2 MB",
-            uploaded: new Date().toISOString(),
-        },
-        {
-            id: 11,
-            fileName:
-                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            size: "2 MB",
-            uploaded: new Date().toISOString(),
-        },
-        {
-            id: 12,
-            fileName:
-                "Lorem ipsum dolor sit amet consectetur.Lorem ipsum dolor sit amet consectetur.",
-            size: "2 MB",
-            uploaded: new Date().toISOString(),
-        },
-    ]);
+    const [queryString, setQueryString] = useState<string | null>(null);
+
+    const [activeFile, setActiveFile] = useState<MetaFile | null>(null);
+    const [activeMenu, setActiveMenu] = useState<string | null>(null);
+
+    useEffect(() => {
+        trackActiveFile?.(activeFile);
+    }, [activeFile, trackActiveFile]);
+
+    const queryFiles = useMemo(() => {
+        if (files.length === 0) return [];
+
+        if (!queryString) return files;
+
+        const fileteredFiles = files.filter((fl) =>
+            fl.fileName.includes(queryString),
+        );
+
+        return fileteredFiles;
+    }, [files, queryString]);
 
     const [itemsPerPage, setItemsPerPage] = useState<number>(10);
     const {
@@ -120,12 +76,7 @@ export default function FilesList() {
         goToNextPage,
         changePage,
         goToPrevPage,
-    } = usePagination<MetaFile>(allFiles[0], itemsPerPage);
-
-    const [queryString, setQueryString] = useState<string | null>(null);
-    console.log(queryString);
-
-    const [activeFile, setActiveFile] = useState<MetaFile | null>(null);
+    } = usePagination<MetaFile>(queryFiles, itemsPerPage);
 
     return (
         <DashboardSection
@@ -164,93 +115,157 @@ export default function FilesList() {
                 ],
             }}
         >
-            {iconView ? (
-                <DashboardSection
-                    search={{
-                        id: "searchFiles",
-                        placeholder: "Filename",
-                        customise: "w-full md:w-3/5 lg:w-3/4",
-                        label: { icon: DocumentTextIcon },
-                        onChange: (e) => {
-                            setQueryString(e.target.value);
-                        },
-                    }}
-                    pagination={{
-                        totalPages,
-                        currentPage,
-                        goToNextPage,
-                        goToPrevPage,
-                        changePage,
-                        theme: "primary",
-                    }}
-                >
+            <DashboardSection
+                search={{
+                    id: "searchFiles",
+                    placeholder: "Filename",
+                    customise: "w-full md:w-3/5 lg:w-3/4",
+                    label: { icon: DocumentTextIcon },
+                    onChange: (e) => {
+                        setQueryString(e.target.value);
+                    },
+                }}
+                pagination={{
+                    totalPages,
+                    currentPage,
+                    goToNextPage,
+                    goToPrevPage,
+                    changePage,
+                    theme: "primary",
+                }}
+            >
+                {iconView && (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
                         {currentItems.map((file) => {
                             return (
-                                <FileComponent
+                                <FileIconComponent
                                     key={file.id}
                                     file={file}
+                                    dropdown={{
+                                        type: "icon",
+                                        props: {
+                                            onClick: () => {
+                                                setActiveFile(file);
+                                            },
+                                        },
+                                        items: [
+                                            {
+                                                target: file,
+                                                icon: {
+                                                    icon: TrashIcon,
+                                                    customiseIcon:
+                                                        "text-rose-500!",
+                                                },
+                                                title: "Delete",
+                                                onClick: (file) => {
+                                                    handleDeleteFileClick?.(
+                                                        file as MetaFile,
+                                                    );
+                                                },
+                                            },
+                                            {
+                                                target: file,
+                                                icon: { icon: ShareIcon },
+                                                title: "Share",
+                                                onClick: (file) => {
+                                                    handleShareFileClick?.(
+                                                        file as MetaFile,
+                                                    );
+                                                },
+                                            },
+                                            {
+                                                target: file,
+                                                icon: { icon: PencilIcon },
+                                                title: "Rename",
+                                                onClick: (file) => {
+                                                    handleRenameFileClick?.(
+                                                        file as MetaFile,
+                                                    );
+                                                },
+                                            },
+                                        ],
+                                        menuId: "fileIconView-" + file.id,
+                                        activeMenu,
+                                        setActiveMenu,
+                                    }}
                                     isActive={activeFile?.id === file.id}
                                     onActiveChange={(file) =>
                                         setActiveFile(file)
                                     }
                                     handleInfoClick={(file) => {
-                                        console.log(file);
+                                        handleInfoButtonClick?.(file);
                                     }}
+                                    clearActiveMenu={() => setActiveMenu(null)}
                                 />
                             );
                         })}
                     </div>
-                </DashboardSection>
-            ) : (
-                <TableComponent
-                    // headers={[]}
-                    noHeader={true}
-                    body={currentItems}
-                    actionEvents={[
-                        {
-                            title: "Manage",
-                            dropdown: {
-                                type: "icon",
-                                props: {
-                                    theme: "secondary-blur",
-                                },
-                                items: [
-                                    {
-                                        icon: PencilIcon,
-                                        text: "Rename",
-                                    },
-                                    {
-                                        icon: TrashIcon,
-                                        text: "Delete",
-                                    },
-                                    {
-                                        icon: ShareIcon,
-                                        text: "Share",
-                                    },
-                                ],
-                            },
-                        },
-                    ]}
-                    search={{
-                        id: "searchFiles",
-                        placeholder: "Filename",
-                        customise: "w-full md:w-3/5 lg:w-3/4",
-                        label: { icon: DocumentTextIcon },
-                        onChange: (e) => {
-                            setQueryString(e.target.value);
-                        },
-                    }}
-                    pagination={{
-                        totalPages,
-                        currentPage,
-                        goToNextPage,
-                        goToPrevPage,
-                        changePage,
-                        theme: "primary",
-                    }}
-                />
-            )}
+                )}
+                {!iconView && (
+                    <div className="space-y-1">
+                        {currentItems.map((file) => {
+                            return (
+                                <FileListComponent
+                                    key={file.id}
+                                    file={file}
+                                    infoButton={{
+                                        onClick: (file) =>
+                                            handleInfoButtonClick?.(file),
+                                    }}
+                                    dropdown={{
+                                        type: "icon",
+                                        useIcon: EllipsisVerticalIcon,
+                                        props: {
+                                            theme: "secondary-blur",
+                                        },
+                                        alignment: "left",
+                                        items: [
+                                            {
+                                                target: file,
+                                                icon: {
+                                                    icon: TrashIcon,
+                                                    customiseIcon:
+                                                        "text-rose-500!",
+                                                },
+                                                title: "Delete",
+                                                onClick: (file) => {
+                                                    handleDeleteFileClick?.(
+                                                        file as MetaFile,
+                                                    );
+                                                },
+                                            },
+                                            {
+                                                target: file,
+                                                icon: { icon: ShareIcon },
+                                                title: "Share",
+                                                onClick: (file) => {
+                                                    handleShareFileClick?.(
+                                                        file as MetaFile,
+                                                    );
+                                                },
+                                            },
+                                            {
+                                                target: file,
+                                                icon: { icon: PencilIcon },
+                                                title: "Rename",
+                                                onClick: (file) => {
+                                                    handleRenameFileClick?.(
+                                                        file as MetaFile,
+                                                    );
+                                                },
+                                            },
+                                        ],
+                                        menuId: "fileListView-" + file.id,
+                                        activeMenu,
+                                        setActiveMenu,
+                                    }}
+                                    trackSelectedFile={trackActiveFile}
+                                />
+                            );
+                        })}
+                    </div>
+                )}
+            </DashboardSection>
         </DashboardSection>
     );
 }

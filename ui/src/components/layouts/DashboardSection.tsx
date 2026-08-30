@@ -16,7 +16,7 @@ import {
     type PaginationButtonsProps,
 } from "../pagination/PaginationButtons";
 
-type SectionLayoutProps<T> = {
+type SectionLayoutProps<T,K> = {
     children: ReactNode;
     header?: {
         title?: string;
@@ -25,7 +25,7 @@ type SectionLayoutProps<T> = {
         actionElements?: {
             icon?: IconComponentProps;
             button?: ActionButtonProps;
-            dropdown?: FloatingMenuComponentProps;
+            dropdown?: FloatingMenuComponentProps<K>;
             iconGroup?: ButtonGroupComponentProps;
         }[];
     };
@@ -33,12 +33,12 @@ type SectionLayoutProps<T> = {
     pagination?: PaginationButtonsProps<T>;
 };
 
-export default function DashboardSection<T>({
+export default function DashboardSection<T,K>({
     children,
     header,
     search,
     pagination,
-}: SectionLayoutProps<T>) {
+}: SectionLayoutProps<T,K>) {
     const navigate = useNavigate();
 
     return (
@@ -57,7 +57,7 @@ export default function DashboardSection<T>({
         >
             {/* Header */}
             {header && (
-                <div>
+                <div className="sticky">
                     {(header.title ||
                         header.breadCrumbs ||
                         header.description) && (
