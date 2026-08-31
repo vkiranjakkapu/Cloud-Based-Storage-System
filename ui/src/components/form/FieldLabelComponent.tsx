@@ -13,7 +13,7 @@ export default function FieldLabelComponent({
 }: LabelComponentProps) {
     return (
         <label
-            className={`text-sm flex items-center justify-center gap-1 pl-3
+            className={`text-sm flex items-center justify-center gap-1 px-2
             text-secondary/50 dark:text-cool/40
             `}
             {...props}

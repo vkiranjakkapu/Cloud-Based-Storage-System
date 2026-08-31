@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
+import type { ApiResponse, ErrorResponse } from "../api/api";
 import AuthService, {
     type LoginRequest,
     type LoginResponse,
@@ -20,8 +21,8 @@ export default function AuthenticationContextProvider({
 }: AuthenticationContextProviderProps) {
     const [profile, setProfile] = useState<UserProfile | null>(null);
 
-    // lazy initializer -
-    // Runs this initialization logic when the state is initially created,
+    // lazy initializer ::
+    // It runs this initialization logic when the state is initially created,
     // rather than evaluating it on every render.
     const [status, setStatus] = useState<AuthStatus>(() => {
         return TokenStorage.getAccessToken() !== null
@@ -32,7 +33,10 @@ export default function AuthenticationContextProvider({
     const fetchProfile = useCallback(() => {
         AuthService.getMe<UserProfile>().then((resp) => {
             if (resp && !("errorMessage" in resp)) {
-                setProfile(resp.data);
+                setProfile({
+                    ...resp.data,
+                    name: `${resp.data.firstName} ${resp.data.lastName}`,
+                });
                 setStatus(AuthStatus.AUTHENTICATED);
             } else {
                 setStatus(AuthStatus.UNAUTHENTICATED);
@@ -48,25 +52,31 @@ export default function AuthenticationContextProvider({
     }, [fetchProfile]);
 
     const login = useCallback(
-        (request: LoginRequest) => {
+        async (
+            request: LoginRequest,
+        ): Promise<ApiResponse<LoginResponse> | ErrorResponse> => {
             setStatus(AuthStatus.INITIALIZING);
-            AuthService.login<LoginResponse>(request)
-                .then((resp) => {
-                    if (resp && !("errorMessage" in resp)) {
-                        TokenStorage.save(
-                            resp.data.accessToken,
-                            resp.data.refreshToken,
-                        );
-                        fetchProfile();
-                    } else {
-                        setStatus(AuthStatus.UNAUTHENTICATED);
-                        console.log(resp);
-                    }
-                })
-                .catch((e) => {
+
+            try {
+                const resp = await AuthService.login<LoginResponse>(request);
+
+                if (resp && !("errorMessage" in resp)) {
+                    TokenStorage.save(
+                        resp.data.accessToken,
+                        resp.data.refreshToken,
+                    );
+                    fetchProfile();
+                } else {
                     setStatus(AuthStatus.UNAUTHENTICATED);
-                    console.log(e);
-                });
+                    console.log(resp);
+                }
+
+                return resp;
+            } catch (e) {
+                setStatus(AuthStatus.UNAUTHENTICATED);
+                console.log(e);
+                throw e;
+            }
         },
         [fetchProfile],
     );

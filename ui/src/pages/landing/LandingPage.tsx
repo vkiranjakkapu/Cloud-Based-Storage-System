@@ -1,26 +1,15 @@
-import {
-    ChevronRightIcon,
-    HomeIcon,
-    PlusIcon,
-} from "@heroicons/react/16/solid";
-import IconComponent from "../../components/IconComponent";
+import LoginForm from "../auth/LoginForm";
+import FavIcon from "/favicon.png"
 
 export default function LandingPage() {
     return (
-        <div className="p-3">
-            <div className="bg-slate-100 p-4">
-                <h1>Home</h1>
-                <IconComponent icon={HomeIcon} theme="primary" />
-                <IconComponent icon={HomeIcon} theme="primary-blur" />
-                <div className="bg-primary rounded p-2 group">
-                    <IconComponent
-                        icon={ChevronRightIcon}
-                        theme="blur"
-                    />
+        <div className="h-screen flex items-center justify-center">
+            <div className="m-8 p-4 w-full md:w-2/3 lg:w-3/5 space-y-3 rounded-lg bg-white/60 dark:bg-secondary border-slate-200 dark:border-cool/15 backdrop-blur-md">
+                <div className="text-center space-y-1 p-2 bg-white/60 backdrop-blur-md  dark:bg-cool/15 rounded-lg overflow-hidden">
+                    <img src={FavIcon} alt="CBSS ICON" className="size-15 mx-auto roundeed-xl" />
+                    <span className="text-primary">Cloud Based Storage System</span>
                 </div>
-                <IconComponent icon={PlusIcon} theme="secondary" />
-                <IconComponent icon={HomeIcon} theme="secondary-blur" />
-                <IconComponent icon={HomeIcon} />
+                <LoginForm />
             </div>
         </div>
     );
