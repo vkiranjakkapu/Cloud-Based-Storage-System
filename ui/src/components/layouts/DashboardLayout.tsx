@@ -19,9 +19,9 @@ export default function DashboardLayout({
         <NavSidebarLayout rightSidebar={useRightSidebar}>
             {/* Dashboard View */}
             {override ? (
-                <section className="p-2">{dashboard}</section>
+                <section className="p-2 py-0">{dashboard}</section>
             ) : (
-                <section className="relative p-2 rounded-xl overflow-clip text-secondary dark:text-cool">
+                <section className="relative p-6 rounded-xl overflow-clip text-secondary dark:text-cool">
                     <div className="absolute inset-0 bg-white/70 dark:bg-secondary backdrop-blur-md"></div>
                     <div className="relative">{dashboard}</div>
                 </section>

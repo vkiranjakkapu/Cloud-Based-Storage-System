@@ -45,6 +45,9 @@ public class Group {
 	@Builder.Default
 	private Set<FileAccess> files = new HashSet<>();
 
+	@OneToMany(mappedBy = "group")
+	private Set<Folder> folders;
+
 	@OneToMany(mappedBy = "group", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH })
 	@Builder.Default
