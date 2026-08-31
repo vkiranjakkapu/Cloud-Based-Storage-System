@@ -5,7 +5,7 @@ export const RoutePaths = {
 
     GROUPS: "/groups",
 
-    FILES: "/files",
+    DIRECTORY: "/directory",
     FOLDER: "/files/:folder",
 
     USERS: "/users",

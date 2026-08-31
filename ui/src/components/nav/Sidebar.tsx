@@ -1,4 +1,4 @@
-import { XMarkIcon } from "@heroicons/react/16/solid";
+import { ChevronRightIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import {
     ArrowLeftStartOnRectangleIcon,
     ChartPieIcon,
@@ -8,6 +8,7 @@ import {
     SunIcon,
     UsersIcon,
 } from "@heroicons/react/24/solid";
+import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import usePrincipal from "../../context/usePrincipal";
 import { RoutePaths } from "../../routes/RoutePaths";
@@ -24,13 +25,19 @@ interface NavItem {
 }
 
 export type SidebarProps = {
+    children?: ReactNode;
     isDarkMode: boolean;
+    showOpenChevron?: boolean;
+    handleOpenNav?: () => void;
     toggleTheme: () => void;
     toggleMenu: () => void;
 };
 
 export default function Sidebar({
+    children,
     isDarkMode,
+    showOpenChevron,
+    handleOpenNav,
     toggleTheme,
     toggleMenu,
 }: SidebarProps) {
@@ -46,7 +53,7 @@ export default function Sidebar({
         },
         {
             label: "Files",
-            route: RoutePaths.FILES,
+            route: RoutePaths.DIRECTORY,
             icon: FolderIcon,
             roles: ["ADMIN", "USER"],
         },
@@ -65,9 +72,26 @@ export default function Sidebar({
     ];
 
     return (
-        <div className="flex flex-row h-full divide-x divide-slate-300 dark:divide-cool/30">
+        <div
+            className={`
+            flex flex-row h-full divide-x
+        `}
+        >
             {/* Menu */}
-            <nav className="w-1/5 flex p-2 py-3 flex-col gap-2 items-center justify-between">
+            <nav
+                className={`relative flex p-2 py-3 flex-col gap-2 items-center justify-between`}
+            >
+                {showOpenChevron && <div
+                    onClick={handleOpenNav}
+                    className="hidden md:flex absolute z-1 top-0 h-full left-full items-center"
+                >
+                    <div className="p-0.5 py-4 bg-white/50 dark:bg-secondary/50 backdrop-blur-lg flex items-center justify-center rounded-r-xl">
+                        <IconComponent
+                            icon={ChevronRightIcon}
+                            theme="secondary-blur"
+                        />
+                    </div>
+                </div>}
                 {/* Header Brand Info */}
                 <img
                     src={FavIcon}
@@ -76,7 +100,7 @@ export default function Sidebar({
                 />
 
                 {/* Menu Items */}
-                <ul className="flex flex-col items-center gap-3 text-xs text-center">
+                <ul className="flex flex-col items-center gap-3 text-xs text-center *:flex *:flex-col">
                     {navPaths.map((item, idx) => {
                         if (profile && !item.roles.includes(profile.roles[0])) {
                             return;
@@ -105,26 +129,33 @@ export default function Sidebar({
                 </ul>
 
                 {/* Bottom Menu */}
-                <ul className="flex flex-col gap-3 text-xs text-center">
+                <ul className="flex flex-col gap-3 text-xs text-center *:flex *:flex-col">
+                    <li className="group cursor-pointer" onClick={toggleTheme}>
+                        <IconComponent
+                            icon={isDarkMode ? SunIcon : MoonIcon}
+                            theme="secondary-blur"
+                        />
+                    </li>
+                    <li className="border-t border-slate-300 dark:border-cool/50 w-1/2 mx-auto"></li>
                     <li
-                        className="group cursor-pointer"
+                        className={`size-8 shadow-sm rounded-full mx-auto group cursor-pointer 
+                            outline outline-cool dark:outline-cool
+                            hover:outline-offset-1 hover:outline-primary
+                            ${location.pathname === RoutePaths.PROFILE ? "outline-offset-1 outline-primary dark:outline-primary" : ""}
+                            transition-all duration-100`}
                         onClick={() => navigate(RoutePaths.PROFILE)}
                     >
                         <img
                             src={Avatar}
                             alt="User Avatar"
-                            className="size-8 rounded-full mx-auto outline outline-primary dark:outline-cool outline-offset-1"
+                            className="size-full"
                         />
-                    </li>
-                    <li className="border-t border-slate-300 dark:border-cool/50 w-1/2 mx-auto"></li>
-                    <li className="group cursor-pointer" onClick={toggleTheme}>
-                        <IconComponent icon={isDarkMode ? SunIcon : MoonIcon} />
                     </li>
                     <li className="group cursor-pointer" onClick={() => {}}>
                         <IconComponent
                             icon={ArrowLeftStartOnRectangleIcon}
                             hoverEffect="group-hover:bg-rose-500!"
-                            customiseIcon="size-4.5 text-rose-400 group-hover:text-white!"
+                            customiseIcon="size-4.5 text-rose-400! group-hover:text-white!"
                         />
                         <span>Logout</span>
                     </li>
@@ -132,69 +163,41 @@ export default function Sidebar({
             </nav>
 
             {/* Focus Menu */}
-            <nav className="flex-1 flex flex-col items-center *:p-2 divide-y divide-slate-300 dark:divide-cool/30">
-                {/* Page Title */}
-                <div className="w-full space-y-3">
-                    <div className="inline-flex gap-2 justify-between items-center w-full">
-                        <h5 className="text-sm font-semibold text-secondary dark:text-cool uppercase">
-                            {(() => {
-                                const page = navPaths.find(
-                                    (item) =>
-                                        location.pathname === item.route ||
-                                        location.pathname.startsWith(
-                                            `${item.route}/`,
-                                        ),
-                                );
+            {children && (
+                <nav className="flex-1 flex flex-col items-center *:p-2.5 *:space-y-3 divide-y">
+                    {/* Page Title */}
+                    <div className="w-full space-y-3">
+                        <div className="inline-flex gap-2 justify-between items-center w-full">
+                            <h5 className="text-sm font-semibold  uppercase">
+                                {(() => {
+                                    const page = navPaths.find(
+                                        (item) =>
+                                            location.pathname === item.route ||
+                                            location.pathname.startsWith(
+                                                `${item.route}/`,
+                                            ),
+                                    );
 
-                                return !page
-                                    ? location.pathname.split("/")[1]
-                                    : page.label;
-                            })()}
-                        </h5>
-                        {/* Mobile Close Button */}
-                        <div className="md:hidden">
-                            <IconComponent
-                                icon={XMarkIcon}
-                                onClick={toggleMenu}
-                                customise="size-7"
-                                customiseIcon="size-4"
-                            />
+                                    return !page
+                                        ? location.pathname.split("/")[1]
+                                        : page.label;
+                                })()}
+                            </h5>
+                            {/* Mobile Close Button */}
+                            <div className="md:hidden">
+                                <IconComponent
+                                    icon={XMarkIcon}
+                                    onClick={toggleMenu}
+                                    customise="size-7"
+                                    customiseIcon="size-4"
+                                />
+                            </div>
                         </div>
                     </div>
-                    {/* <InputComponent
-                        label={{ icon: MagnifyingGlassIcon }}
-                        type="text"
-                        id="search"
-                        placeholder={"Search"}
-                        customise="rounded-full!"
-                    /> */}
-                </div>
 
-                {/* Page Specific Content */}
-                <div className="flex-1 container">
-                    <DividerComponent text="Recent Files" />
-                </div>
-            </nav>
-        </div>
-    );
-}
-
-type DividerComponentProps = {
-    text: string;
-    icon?: IconProps;
-};
-
-function DividerComponent({ text, icon }: DividerComponentProps) {
-    return (
-        <div className="inline-flex items-center justify-between text-slate-500/60 dark:text-cool/40 w-full pointer-events-none">
-            <h2 className="text-xs uppercase font-semibold">{text}</h2>
-            {icon && (
-                <IconComponent
-                    icon={icon}
-                    customise="size-6"
-                    customiseIcon="size-4"
-                    theme="secondary-blur"
-                />
+                    {/* Page Specific Content */}
+                    {children}
+                </nav>
             )}
         </div>
     );
