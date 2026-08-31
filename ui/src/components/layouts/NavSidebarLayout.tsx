@@ -2,13 +2,20 @@ import { Bars3Icon, MoonIcon, SunIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState, type ReactNode } from "react";
 import IconComponent from "../IconComponent";
 import Sidebar from "../nav/Sidebar";
+import SidebarComponent, {
+    type RightSidebarComponentProps,
+} from "../sidebars/RightSidebarComponent";
 import FavIcon from "/favicon.png";
 
 export type SidebarLayoutProps = {
     children: [ReactNode, ReactNode?];
+    rightSidebar?: RightSidebarComponentProps;
 };
 
-export default function SidebarLayout({ children }: SidebarLayoutProps) {
+export default function NavSidebarLayout({
+    children,
+    rightSidebar,
+}: SidebarLayoutProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [dashboard, focusMenu] = children;
 
@@ -46,9 +53,13 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
             )}
             <aside
                 className={`
-					fixed inset-y-0 left-0 z-50 flex flex-col ${focusMenu ? "w-80" : ""}
+					fixed inset-y-0 left-0 z-50 flex flex-col ${
+                        focusMenu && rightSidebar && !rightSidebar.active
+                            ? "w-80"
+                            : ""
+                    }
                     transition-transform duration-300 ease-in-out
-                    rounded-e-xl overflow-hidden
+                    rounded-e-xl
 
 				  bg-white/50 dark:bg-secondary/50 backdrop-blur-lg
 					border-r border-slate-200 dark:border-cool/15
@@ -61,14 +72,19 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
                     isDarkMode={isDarkMode}
                     toggleTheme={toggleTheme}
                     toggleMenu={() => setIsOpen(!isOpen)}
+                    showOpenChevron={rightSidebar && rightSidebar.active}
+                    handleOpenNav={rightSidebar?.handleSidebarClose}
                 >
-                    {focusMenu && focusMenu}
+                    {focusMenu &&
+                        rightSidebar &&
+                        !rightSidebar.active &&
+                        focusMenu}
                 </Sidebar>
             </aside>
 
             {/* RIGHT VIEWPORT VIEW CANVAS */}
             <div
-                className={`flex flex-col w-full ${focusMenu ? "md:pl-80" : "md:pl-[3.45rem]"}`}
+                className={`flex flex-col w-full ${focusMenu && rightSidebar && !rightSidebar.active ? "md:pl-80" : "md:pl-[3.45rem]"}`}
             >
                 {/* Mobile Menu */}
                 <header className="md:hidden flex flex-wrap h-16 items-center justify-between border-b px-4 border-gray-200 bg-white dark:border-secondary-dark dark:bg-secondary">
@@ -97,7 +113,9 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
                 </header>
 
                 {/* Main Context Canvas View */}
-                <div className="flex-1 p-6 overflow-x-clip overflow-y-auto">
+                <div
+                    className={`flex-1 p-6 overflow-x-clip overflow-y-auto ${rightSidebar && rightSidebar.active && `lg:mr-84`}`}
+                >
                     {dashboard ?? (
                         <>
                             <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -106,6 +124,7 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
                         </>
                     )}
                 </div>
+                {rightSidebar && <SidebarComponent {...rightSidebar} />}
             </div>
         </main>
     );

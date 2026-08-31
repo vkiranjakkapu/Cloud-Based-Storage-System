@@ -7,17 +7,18 @@ import {
 } from "../ButtonGroupComponent";
 import type { FloatingMenuComponentProps } from "../floatingMenu/FloatingMenuComponent";
 import FloatingMenuComponent from "../floatingMenu/FloatingMenuComponent";
-import type { IconComponentProps } from "../IconComponent";
-import IconComponent from "../IconComponent";
 import type { InputComponentProps } from "../form/InputComponent";
 import InputComponent from "../form/InputComponent";
+import type { IconComponentProps } from "../IconComponent";
+import IconComponent from "../IconComponent";
 import {
     PaginationButtons,
     type PaginationButtonsProps,
 } from "../pagination/PaginationButtons";
 
-type SectionLayoutProps<T,K> = {
+type SectionLayoutProps<T, K> = {
     children: ReactNode;
+    className?: string;
     header?: {
         title?: string;
         description?: string;
@@ -29,16 +30,19 @@ type SectionLayoutProps<T,K> = {
             iconGroup?: ButtonGroupComponentProps;
         }[];
     };
+    useDirectoryTheme?: string;
     search?: InputComponentProps;
     pagination?: PaginationButtonsProps<T>;
 };
 
-export default function DashboardSection<T,K>({
+export default function DashboardSection<T, K>({
     children,
+    className,
     header,
+    useDirectoryTheme,
     search,
     pagination,
-}: SectionLayoutProps<T,K>) {
+}: SectionLayoutProps<T, K>) {
     const navigate = useNavigate();
 
     return (
@@ -51,13 +55,29 @@ export default function DashboardSection<T,K>({
                 *:not-last:gap-2 
 
                 *:not-last:pb-2
-                space-y-2
+                space-y-3
                 divide-y divide-slate-200 dark:divide-cool/15
+
+                ${
+                    useDirectoryTheme !== undefined &&
+                    `
+                    p-4 md:p-8
+                    space-y-3 
+                    rounded-lg
+
+                    bg-white/50 
+                    dark:bg-secondary/50 
+                    backdrop-blur-lg 
+                    ${useDirectoryTheme}
+                    `
+                }
+                transition-all duration-150
+                ${className}    
             `}
         >
             {/* Header */}
             {header && (
-                <div className="sticky">
+                <div>
                     {(header.title ||
                         header.breadCrumbs ||
                         header.description) && (

@@ -1,4 +1,4 @@
-import { XMarkIcon } from "@heroicons/react/16/solid";
+import { ChevronRightIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import {
     ArrowLeftStartOnRectangleIcon,
     ChartPieIcon,
@@ -27,6 +27,8 @@ interface NavItem {
 export type SidebarProps = {
     children?: ReactNode;
     isDarkMode: boolean;
+    showOpenChevron?: boolean;
+    handleOpenNav?: () => void;
     toggleTheme: () => void;
     toggleMenu: () => void;
 };
@@ -34,6 +36,8 @@ export type SidebarProps = {
 export default function Sidebar({
     children,
     isDarkMode,
+    showOpenChevron,
+    handleOpenNav,
     toggleTheme,
     toggleMenu,
 }: SidebarProps) {
@@ -75,8 +79,19 @@ export default function Sidebar({
         >
             {/* Menu */}
             <nav
-                className={`flex p-2 py-3 flex-col gap-2 items-center justify-between`}
+                className={`relative flex p-2 py-3 flex-col gap-2 items-center justify-between`}
             >
+                {showOpenChevron && <div
+                    onClick={handleOpenNav}
+                    className="hidden md:flex absolute z-1 top-0 h-full left-full items-center"
+                >
+                    <div className="p-0.5 py-4 bg-white/50 dark:bg-secondary/50 backdrop-blur-lg flex items-center justify-center rounded-r-xl">
+                        <IconComponent
+                            icon={ChevronRightIcon}
+                            theme="secondary-blur"
+                        />
+                    </div>
+                </div>}
                 {/* Header Brand Info */}
                 <img
                     src={FavIcon}

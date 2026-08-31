@@ -1,19 +1,22 @@
 import type { ReactNode } from "react";
-import SidebarLayout from "./SidebarLayout";
+import type { RightSidebarComponentProps } from "../sidebars/RightSidebarComponent";
+import NavSidebarLayout from "./NavSidebarLayout";
 
 export type DashboardLayoutProps = {
     children: [ReactNode, ReactNode?];
     override?: boolean;
+    useRightSidebar?: RightSidebarComponentProps;
 };
 
 export default function DashboardLayout({
     children,
     override = false,
+    useRightSidebar,
 }: DashboardLayoutProps) {
     const [dashboard, focusMenu] = children;
 
     return (
-        <SidebarLayout>
+        <NavSidebarLayout rightSidebar={useRightSidebar}>
             {/* Dashboard View */}
             {override ? (
                 <section className="p-2">{dashboard}</section>
@@ -23,9 +26,8 @@ export default function DashboardLayout({
                     <div className="relative">{dashboard}</div>
                 </section>
             )}
-
             {/* Focus Menu Aside Nav */}
             {focusMenu}
-        </SidebarLayout>
+        </NavSidebarLayout>
     );
 }

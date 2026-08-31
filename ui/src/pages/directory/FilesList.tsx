@@ -30,6 +30,8 @@ export interface MetaFile {
 
 type FilesListProps = {
     files: MetaFile[];
+
+    handleDoubleClick: (item: MetaFile) => void;
     handleInfoButtonClick?: (file: MetaFile) => void;
     handleRenameFileClick?: (file: MetaFile) => void;
     handleShareFileClick?: (file: MetaFile) => void;
@@ -39,6 +41,7 @@ type FilesListProps = {
 
 export default function FilesList({
     files,
+    handleDoubleClick,
     handleInfoButtonClick,
     handleRenameFileClick,
     handleShareFileClick,
@@ -195,6 +198,7 @@ export default function FilesList({
                                     handleInfoClick={(file) => {
                                         handleInfoButtonClick?.(file);
                                     }}
+                                    handleDoubleClick={handleDoubleClick}
                                     clearActiveMenu={() => setActiveMenu(null)}
                                 />
                             );
@@ -259,6 +263,7 @@ export default function FilesList({
                                         activeMenu,
                                         setActiveMenu,
                                     }}
+                                    handleDoubleClick={handleDoubleClick}
                                     trackSelectedFile={trackActiveFile}
                                 />
                             );

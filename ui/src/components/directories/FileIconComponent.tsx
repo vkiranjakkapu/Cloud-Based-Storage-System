@@ -1,4 +1,7 @@
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import {
+    EllipsisVerticalIcon,
+    InformationCircleIcon,
+} from "@heroicons/react/24/outline";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import { type HTMLAttributes } from "react";
 import type { MetaFile } from "../../pages/directory/FilesList";
@@ -13,6 +16,7 @@ type FileIconComponentProps = HTMLAttributes<HTMLDivElement> & {
     isActive: boolean;
     className?: string;
 
+    handleDoubleClick: (item: MetaFile) => void;
     handleInfoClick: (item: MetaFile) => void;
     onActiveChange: (item: MetaFile) => void;
     clearActiveMenu: () => void;
@@ -24,6 +28,7 @@ export default function FileIconComponent({
     isActive,
     className,
     onActiveChange,
+    handleDoubleClick,
     handleInfoClick,
     clearActiveMenu,
 }: FileIconComponentProps) {
@@ -31,7 +36,7 @@ export default function FileIconComponent({
         <div
             className={`
                 relative flex flex-col items-center p-1 cursor-pointer
-                border border-cool/50 rounded-xl shadow-sm
+                border border-cool/50 dark:border-cool/15 rounded-xl shadow-sm
                 ${
                     isActive
                         ? "bg-warm/50 text-current dark:bg-secondary dark:text-warm dark:hover:text-warm [&>.info]:opacity-100"
@@ -39,7 +44,8 @@ export default function FileIconComponent({
                         dark:bg-secondary-dark/70 dark:hover:bg-secondary dark:text-white/85 dark:hover:text-white`
                 }
 
-                [&>.info]:opacity-0 hover:[&>.info]:opacity-100
+                md:[&>.info]:opacity-0 md:hover:[&>.info]:opacity-100
+                md:[&>.info]:pointer-events-none md:hover:[&>.info]:pointer-events-auto
 
                 transition-colors duration-150
                 ${className}
@@ -47,6 +53,7 @@ export default function FileIconComponent({
             onClick={() => {
                 onActiveChange(file);
             }}
+            onDoubleClick={() => handleDoubleClick(file)}
         >
             <div
                 className="info space-y-1 absolute inset-0 p-2 text-right transition-opacity duration-200"
@@ -57,7 +64,7 @@ export default function FileIconComponent({
             >
                 <IconComponent
                     icon={InformationCircleIcon}
-                    theme={isActive ? `primary-blur` : `secondary-blur`}
+                    theme={`secondary-blur`}
                     customise="size-8! ml-auto"
                     customiseIcon="size-5!"
                     onClick={(e) => {
@@ -72,10 +79,11 @@ export default function FileIconComponent({
                             alignment: "left",
                             props: {
                                 ...dropdown.props,
+                                icon: EllipsisVerticalIcon,
                                 theme:
                                     dropdown.props?.theme ?? `secondary-blur`,
-                                customise: `ml-auto m-1 ${dropdown.props?.customise}`,
-                                customiseIcon: `${dropdown.props?.customiseIcon}`,
+                                customise: `size-8! ml-auto m-1 ${dropdown.props?.customise}`,
+                                customiseIcon: `size-5! ${dropdown.props?.customiseIcon}`,
                             },
                         }}
                     />

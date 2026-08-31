@@ -20,6 +20,7 @@ type FileListComponentProps = HTMLAttributes<HTMLDivElement> & {
     showOwner?: boolean;
     preview?: boolean;
     useIcon?: IconProps;
+    handleDoubleClick: (item: MetaFile) => void;
     trackSelectedFile?: Dispatch<SetStateAction<MetaFile | null>>;
 };
 
@@ -32,6 +33,7 @@ export default function FileListComponent({
     preview = true,
     useIcon: Icon,
     className,
+    handleDoubleClick,
     trackSelectedFile,
     ...props
 }: FileListComponentProps) {
@@ -50,6 +52,7 @@ export default function FileListComponent({
                 ${className}
             `}
             onClick={() => trackSelectedFile?.(file)}
+            onDoubleClick={() => handleDoubleClick(file)}
             {...props}
         >
             {Icon ? (

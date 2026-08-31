@@ -8,12 +8,20 @@ import {
 import { useState } from "react";
 import IconComponent from "../IconComponent";
 import DuoFolderSvgIcon from "../icons/DuoFolderIcon";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
 type FolderComponentProps = {
     folder?: unknown;
+
+    handleDoubleClick: (item: unknown) => void;
+    handleInfoClick?: (folder: unknown) => void;
 };
 
-export function FolderComponent({ folder }: FolderComponentProps) {
+export function FolderComponent({
+    folder,
+    handleDoubleClick,
+    handleInfoClick,
+}: FolderComponentProps) {
     const [isActive, setIsActive] = useState<boolean>(false);
 
     return (
@@ -32,10 +40,20 @@ export function FolderComponent({ folder }: FolderComponentProps) {
                 hover:bg-slate-200/60 hover:dark:bg-secondary-dark/50
                 hover:[&>.folder]:text-primary hover:[&>.folder]:scale-105
 
-                [&>.menu]:invisible hover:[&>.menu]:visible
+                md:[&>.menu]:invisible md:hover:[&>.menu]:visible
                 *:transition-all *:duration-100`}
+            onDoubleClick={() => {
+                handleDoubleClick(folder);
+            }}
         >
-            <div className="absolute z-2 right-0 pr-1 menu">
+            <div className="absolute flex gap-1 z-2 right-0 pr-1 menu">
+                <IconComponent
+                    theme={`secondary-blur`}
+                    customise="size-6.5"
+                    icon={InformationCircleIcon}
+                    customiseIcon="size-5"
+                    onClick={handleInfoClick}
+                />
                 <IconComponent
                     theme={isActive ? `primary` : `secondary-blur`}
                     customise="size-6.5"

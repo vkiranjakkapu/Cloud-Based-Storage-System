@@ -14,7 +14,7 @@ import {
     ShareIcon,
     TrashIcon,
 } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import FileListComponent from "../../components/directories/FileListComponent";
 import { FolderComponent } from "../../components/directories/FolderComponent";
 import InputComponent from "../../components/form/InputComponent";
@@ -26,6 +26,7 @@ import DividerComponent from "../../components/nav/DividerComponent";
 import FocusMenu from "../../components/nav/FocusMenu";
 import FilesList, { type MetaFile } from "./FilesList";
 import sampleData from "./sampleData.json";
+import SharedUserComponent from "../../components/SheredUserComponent";
 
 export default function DirectoryPage() {
     // const activeDirectory = useParams<{ folder: string }>();
@@ -37,9 +38,19 @@ export default function DirectoryPage() {
 
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
+    const handleOpenFile = (file: MetaFile) => {
+        console.log("file selected-" + file.id);
+        setActiveFile(file);
+    };
+
+    const handleOpenFolder = (folder: unknown) => {
+        console.log("folder selected-" + folder);
+    };
+
     // TODO: get file details by fileId
     const handleFileInfoClick = (file: MetaFile) => {
         console.log("Info of file-" + file.id);
+        setActiveFile(file);
     };
 
     const handleRenameFileClick = (file: MetaFile) => {
@@ -54,125 +65,148 @@ export default function DirectoryPage() {
         console.log("Delete file-" + file.id);
     };
 
-    return (
-        <DashboardLayout override={true}>
-            {[
-                // Folders
-                <IconHeaderLayout
-                    title="Documents"
-                    description="3 folders and 48 files in category"
-                    actionButtons={[{ theme: "primary", icon: ShareIcon }]}
-                >
-                    {/* Folders Section */}
-                    <DashboardSection
-                        header={{
-                            // title:"3 Folders",
-                            breadCrumbs: [
-                                { text: "Documents" },
-                                { text: "Projects" },
-                                { text: "Internship" },
-                            ],
-                            description: "3 Folders",
-                            actionElements: [
-                                {
-                                    button: {
-                                        icon: DocumentPlusIcon,
-                                        text: "New File",
-                                    },
-                                },
-                                {
-                                    button: {
-                                        icon: FolderPlusIcon,
-                                        text: "New Folder",
-                                    },
-                                },
-                                {
-                                    icon: {
-                                        icon: ShareIcon,
-                                        customise:
-                                            "p-2 size-8 shadow-md sm:hidden",
-                                        theme: "primary",
-                                    },
-                                },
-                                {
-                                    dropdown: {
-                                        type: "icon",
-                                        props: {
-                                            theme: "primary",
-                                            customise: "p-2 shadow-sm",
-                                        },
-                                        items: [
-                                            {
-                                                // text: "Rename",
-                                                icon: { icon: PencilIcon },
-                                                title: "Rename Folder",
-                                                onClick: () => {},
-                                            },
-                                            {
-                                                // text: "Delete",
-                                                icon: { icon: TrashIcon },
-                                                title: "Delete Folder",
-                                                onClick: () => {},
-                                            },
-                                        ],
-                                    },
-                                },
-                            ],
-                        }}
-                    >
-                        <div className="max-h-100 overflow-scroll grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
-                            <FolderComponent />
+    function FileInfoSidebar(): ReactNode {
+        return (
+            <div className="space-y-3">
+                <div className="relative bg-slate-50 dark:bg-secondary-dark w-full h-40 border border-slate-200 dark:border-cool/15 p-2 rounded-md shadow-sm">
+                    <div className="relative h-full">
+                        <DocumentTextIcon className="w-full h-full" />
+                    </div>
+                    <div className="absolute inset-0 flex justify-end text-end">
+                        <div className="ml-auto p-2">
+                            <IconComponent icon={ShareIcon} />
                         </div>
-                    </DashboardSection>
+                    </div>
+                </div>
+                <div className="p-2 bg-slate-50 dark:bg-secondary-dark rounded-md shadow-sm border border-slate-200 dark:border-cool/15">
+                    <p>{activeFile?.id}</p>
+                    <p>Size: {activeFile?.id}</p>
+                    <p>Uploaded: {activeFile?.id}</p>
+                    <p>Owner: {activeFile?.id}</p>
+                </div>
+                <SharedUserComponent />
+            </div>
+        );
+    }
 
-                    {/* Files Section */}
-                    <FilesList
-                        files={allFiles[0]}
-                        handleInfoButtonClick={handleFileInfoClick}
-                        handleRenameFileClick={handleRenameFileClick}
-                        handleShareFileClick={handleShareFileClick}
-                        handleDeleteFileClick={handleDeleteFileClick}
-                        trackActiveFile={setActiveFile}
-                    />
-                </IconHeaderLayout>,
+    return (
+        <DashboardLayout
+            override={true}
+            useRightSidebar={{
+                active: activeFile !== null,
+                children: FileInfoSidebar(),
+                handleSidebarClose() {
+                    setActiveFile(null);
+                },
+                useDirectoryTheme: "",
+            }}
+        >
+            {[
+                <div className="flex gap-3">
+                    {/* Folders */}
+                    <IconHeaderLayout
+                        title="Documents"
+                        description="3 folders and 48 files in category"
+                        actionButtons={[{ theme: "primary", icon: ShareIcon }]}
+                    >
+                        {/* Folders Section */}
+                        <DashboardSection
+                            header={{
+                                // title:"3 Folders",
+                                breadCrumbs: [
+                                    { text: "Documents" },
+                                    { text: "Projects" },
+                                    { text: "Internship" },
+                                ],
+                                description: "3 Folders",
+                                actionElements: [
+                                    {
+                                        button: {
+                                            icon: DocumentPlusIcon,
+                                            text: "New File",
+                                        },
+                                    },
+                                    {
+                                        button: {
+                                            icon: FolderPlusIcon,
+                                            text: "New Folder",
+                                        },
+                                    },
+                                    {
+                                        icon: {
+                                            icon: ShareIcon,
+                                            customise:
+                                                "p-2 size-8 shadow-md sm:hidden",
+                                            theme: "primary",
+                                        },
+                                    },
+                                    {
+                                        dropdown: {
+                                            type: "icon",
+                                            props: {
+                                                theme: "primary",
+                                                customise: "p-2 shadow-sm",
+                                            },
+                                            items: [
+                                                {
+                                                    // text: "Rename",
+                                                    icon: { icon: PencilIcon },
+                                                    title: "Rename Folder",
+                                                    onClick: () => {},
+                                                },
+                                                {
+                                                    // text: "Delete",
+                                                    icon: { icon: TrashIcon },
+                                                    title: "Delete Folder",
+                                                    onClick: () => {},
+                                                },
+                                            ],
+                                        },
+                                    },
+                                ],
+                            }}
+                        >
+                            <div className="max-h-100 overflow-scroll grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+                                <FolderComponent
+                                    handleDoubleClick={handleOpenFolder}
+                                />
+                                <FolderComponent
+                                    handleDoubleClick={handleOpenFolder}
+                                />
+                                <FolderComponent
+                                    handleDoubleClick={handleOpenFolder}
+                                />
+                                <FolderComponent
+                                    handleDoubleClick={handleOpenFolder}
+                                />
+                                <FolderComponent
+                                    handleDoubleClick={handleOpenFolder}
+                                />
+                                <FolderComponent
+                                    handleDoubleClick={handleOpenFolder}
+                                />
+                                <FolderComponent
+                                    handleDoubleClick={handleOpenFolder}
+                                />
+                            </div>
+                        </DashboardSection>
+                        {/* Files Section */}
+                        <FilesList
+                            files={allFiles[0]}
+                            handleDoubleClick={handleOpenFile}
+                            handleInfoButtonClick={handleFileInfoClick}
+                            handleRenameFileClick={handleRenameFileClick}
+                            handleShareFileClick={handleShareFileClick}
+                            handleDeleteFileClick={handleDeleteFileClick}
+                            trackActiveFile={setActiveFile}
+                        />
+                    </IconHeaderLayout>
+                </div>,
 
                 // Focus Menu
                 <FocusMenu>
                     {/* Folders */}
-                    <div className="container flex-1">
+                    <div className="container">
                         <DividerComponent
                             text="Categories"
                             icon={FolderOpenIcon}
@@ -285,7 +319,7 @@ export default function DirectoryPage() {
                         />
                         {/* Latest Files */}
                         <div className="space-y-1">
-                            {allFiles[0].slice(0, 8).map((file, idx) => (
+                            {allFiles[0].slice(0, 5).map((file, idx) => (
                                 <FileListComponent
                                     key={idx}
                                     file={file}
@@ -352,6 +386,7 @@ export default function DirectoryPage() {
                                         activeMenu,
                                         setActiveMenu,
                                     }}
+                                    handleDoubleClick={handleOpenFile}
                                     trackSelectedFile={(file) => {
                                         setActiveFile(file);
                                     }}

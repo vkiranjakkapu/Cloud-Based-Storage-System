@@ -21,7 +21,7 @@ export default function IconHeaderLayout({
             className={`
                 *:p-4 *:md:p-8
 
-                [&>*:not(:first-child):not(:last-child)]:mb-2
+                [&>*:not(:first-child):not(:last-child)]:mb-3
 
                 [&>:not(.directory-header)]:space-y-3 
                 [&>:not(.directory-header)]:rounded-lg
@@ -35,7 +35,7 @@ export default function IconHeaderLayout({
                 [&>:not(.directory-header)]:backdrop-blur-lg 
         `}
         >
-            <div className="directory-header sticky z-0 h-45 inset-x-0 px-4! md:px-8!">
+            <div className="directory-header sticky z-0 h-45 inset-x-0">
                 <div className="flex flex-row justify-between items-center gap-2 md:gap-10 h-full">
                     <DuoFolderSvgIcon
                         className="text-primary h-1/2 md:size-40 drop-shadow-md dark:drop-shadow-warm/15"
