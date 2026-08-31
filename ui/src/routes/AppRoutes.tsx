@@ -6,16 +6,22 @@ import LandingPage from "../pages/landing/LandingPage";
 import ProfilePage from "../pages/profile/ProfilePage";
 import UsersPage from "../pages/users/UsersPage";
 import AdminLayout from "./layouts/AdminLayout";
+import LandingLayout from "./layouts/LandingLayout";
 import ProtectedLayout from "./layouts/ProtectedLayout";
 import { RoutePaths } from "./RoutePaths";
 
 export default function AppRoutes() {
     return (
         <Routes>
-            <Route path={RoutePaths.HOME} element={<LandingPage />}></Route>
+            <Route element={<LandingLayout />}>
+                <Route path={RoutePaths.HOME} element={<LandingPage />}></Route>
+            </Route>
             <Route element={<ProtectedLayout />}>
                 <Route path={RoutePaths.DASHBOARD} element={<Dashboard />} />
-                <Route path={RoutePaths.DIRECTORY} element={<DirectoryPage />} />
+                <Route
+                    path={RoutePaths.DIRECTORY}
+                    element={<DirectoryPage />}
+                />
                 <Route path={RoutePaths.GROUPS} element={<GroupsPage />} />
                 <Route path={RoutePaths.PROFILE} element={<ProfilePage />} />
                 <Route element={<AdminLayout />}>

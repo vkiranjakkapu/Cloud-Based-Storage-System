@@ -42,7 +42,7 @@ export default function Sidebar({
     toggleMenu,
 }: SidebarProps) {
     const navigate = useNavigate();
-    const { profile } = usePrincipal();
+    const { profile, logout } = usePrincipal();
 
     const navPaths: NavItem[] = [
         {
@@ -81,17 +81,19 @@ export default function Sidebar({
             <nav
                 className={`relative flex p-2 py-3 flex-col gap-2 items-center justify-between`}
             >
-                {showOpenChevron && <div
-                    onClick={handleOpenNav}
-                    className="hidden md:flex absolute z-1 top-0 h-full left-full items-center"
-                >
-                    <div className="p-0.5 py-4 bg-white/50 dark:bg-secondary/50 backdrop-blur-lg flex items-center justify-center rounded-r-xl">
-                        <IconComponent
-                            icon={ChevronRightIcon}
-                            theme="secondary-blur"
-                        />
+                {showOpenChevron && (
+                    <div
+                        onClick={handleOpenNav}
+                        className="hidden md:flex absolute z-1 top-0 h-full left-full items-center"
+                    >
+                        <div className="p-0.5 py-4 bg-white/50 dark:bg-secondary/50 backdrop-blur-lg flex items-center justify-center rounded-r-xl">
+                            <IconComponent
+                                icon={ChevronRightIcon}
+                                theme="secondary-blur"
+                            />
+                        </div>
                     </div>
-                </div>}
+                )}
                 {/* Header Brand Info */}
                 <img
                     src={FavIcon}
@@ -151,7 +153,7 @@ export default function Sidebar({
                             className="size-full"
                         />
                     </li>
-                    <li className="group cursor-pointer" onClick={() => {}}>
+                    <li className="group cursor-pointer" onClick={logout}>
                         <IconComponent
                             icon={ArrowLeftStartOnRectangleIcon}
                             hoverEffect="group-hover:bg-rose-500!"

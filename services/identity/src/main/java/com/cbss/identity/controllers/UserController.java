@@ -21,6 +21,7 @@ import com.cbss.identity.dto.APIResponseDto;
 import com.cbss.identity.dto.CreateUserRequestDto;
 import com.cbss.identity.dto.FetchUsersRequestDto;
 import com.cbss.identity.dto.PasswordChangeRequestDto;
+import com.cbss.identity.dto.RegistrationRequest;
 import com.cbss.identity.dto.UpdateUserRequest;
 import com.cbss.identity.dto.UserResponse;
 import com.cbss.identity.entities.RoleType;
@@ -66,6 +67,16 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(APIResponseDto.builder().data(userService.createUser(request)).build());
+    }
+
+    @Operation(summary = "Registration By Users")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Token refreshed"),
+            @ApiResponse(responseCode = "400", description = "Validation failed"),
+    })
+    @PostMapping("/register")
+    public ResponseEntity<APIResponseDto> register(@Valid @RequestBody RegistrationRequest request) {
+        return ResponseEntity.ok(APIResponseDto.builder().data(userService.register(request)).build());
     }
 
     @Operation(summary = "Get all users")

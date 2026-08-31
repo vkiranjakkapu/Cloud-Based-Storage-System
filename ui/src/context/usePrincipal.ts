@@ -1,5 +1,6 @@
 import { createContext, useContext } from "react";
-import type { LoginRequest } from "../services/AuthService";
+import type { LoginRequest, LoginResponse } from "../services/AuthService";
+import type { ApiResponse, ErrorResponse } from "../api/api";
 
 export type UserProfile = {
     id: string;
@@ -49,7 +50,9 @@ export type PrincipalContext = {
     status: AuthStatus;
     isAdmin: boolean;
     isLoggedIn: boolean;
-    login: (request: LoginRequest) => void;
+    login: (
+        request: LoginRequest,
+    ) => Promise<ApiResponse<LoginResponse> | ErrorResponse>;
     logout: () => void;
 };
 
