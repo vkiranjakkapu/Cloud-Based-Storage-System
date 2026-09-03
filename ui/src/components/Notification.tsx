@@ -7,9 +7,16 @@ import {
 export type NotificationProps = {
     type: "success" | "error" | "info";
     messages: string[];
+    hideIcon?: boolean;
+    customise?: string;
 };
 
-export default function Notification({ type, messages }: NotificationProps) {
+export default function Notification({
+    type,
+    messages,
+    hideIcon = false,
+    customise,
+}: NotificationProps) {
     return (
         <>
             {messages.length > 0 && (
@@ -21,17 +28,18 @@ export default function Notification({ type, messages }: NotificationProps) {
                                         : type == "info"
                                           ? " bg-cyan-500/10 text-cyan-700 dark:text-cyan-400"
                                           : " bg-rose-500/10 text-rose-700 dark:text-rose-400"
-                                }`}
+                                } ${customise}`}
                 >
-                    {type == "error" ? (
-                        <ExclamationCircleIcon
-                            className={`text-rose-500 size-4`}
-                        />
-                    ) : type == "info" ? (
-                        <InformationCircleIcon className="text-primary size-4" />
-                    ) : (
-                        <CheckCircleIcon className="text-emerald-500 size-4" />
-                    )}
+                    {!hideIcon &&
+                        (type == "error" ? (
+                            <ExclamationCircleIcon
+                                className={`text-rose-500 size-4`}
+                            />
+                        ) : type == "info" ? (
+                            <InformationCircleIcon className="text-primary size-4" />
+                        ) : (
+                            <CheckCircleIcon className="text-emerald-500 size-4" />
+                        ))}
                     <span>{messages.join(", ")}</span>
                 </div>
             )}

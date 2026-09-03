@@ -42,7 +42,7 @@ public class Folder {
     private String name;
 
     @Builder.Default
-    private boolean isRoot = true;
+    private boolean isRoot = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")

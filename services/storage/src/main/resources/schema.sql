@@ -139,6 +139,10 @@ CREATE TABLE IF NOT EXISTS file_accesses (
 -- Folder indexes
 -- -------------------------------------------------------------
 
+CREATE UNIQUE INDEX IF NOT EXISTS uq_folders_one_root_per_owner
+    ON folders (owner_id)
+    WHERE is_root = TRUE;
+
 -- Fast lookup of active children of a folder.
 CREATE INDEX IF NOT EXISTS idx_folders_active_by_parent
     ON folders (parent_id)

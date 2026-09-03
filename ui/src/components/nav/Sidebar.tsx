@@ -156,7 +156,7 @@ export default function Sidebar({
                     <li className="group cursor-pointer" onClick={logout}>
                         <IconComponent
                             icon={ArrowLeftStartOnRectangleIcon}
-                            hoverEffect="group-hover:bg-rose-500!"
+                            customiseLayer="group-hover:bg-rose-500!"
                             customiseIcon="size-4.5 text-rose-400! group-hover:text-white!"
                         />
                         <span>Logout</span>

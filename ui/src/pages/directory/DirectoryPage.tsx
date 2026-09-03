@@ -1,4 +1,5 @@
 import {
+    ArrowUpTrayIcon,
     ChevronDownIcon,
     ChevronRightIcon,
     DocumentDuplicateIcon,
@@ -11,10 +12,14 @@ import {
     InformationCircleIcon,
     MagnifyingGlassIcon,
     PencilIcon,
+    PlusCircleIcon,
     ShareIcon,
     TrashIcon,
 } from "@heroicons/react/24/outline";
-import { useState, type ReactNode } from "react";
+import axios from "axios";
+import { useState, type ChangeEvent, type ReactNode } from "react";
+import { useParams } from "react-router-dom";
+import ActionButton from "../../components/ActionButtonComponent";
 import FileListComponent from "../../components/directories/FileListComponent";
 import { FolderComponent } from "../../components/directories/FolderComponent";
 import InputComponent from "../../components/form/InputComponent";
@@ -24,17 +29,26 @@ import DashboardSection from "../../components/layouts/DashboardSection";
 import IconHeaderLayout from "../../components/layouts/IconHeaderLayout";
 import DividerComponent from "../../components/nav/DividerComponent";
 import FocusMenu from "../../components/nav/FocusMenu";
+import SharedUserComponent from "../../components/SheredUserComponent";
+import {
+    UploadComponent,
+    type UploadComponentProps,
+} from "../../components/UploadComponent";
+import UploadService, {
+    type UploadRequest,
+} from "../../services/UploadService";
 import FilesList, { type MetaFile } from "./FilesList";
 import sampleData from "./sampleData.json";
-import SharedUserComponent from "../../components/SheredUserComponent";
 
 export default function DirectoryPage() {
-    // const activeDirectory = useParams<{ folder: string }>();
+    const { folder: activeDirectory } = useParams<{ folder: string }>();
 
     const allFiles = useState<MetaFile[]>(sampleData as MetaFile[]);
 
     const [activeFile, setActiveFile] = useState<MetaFile | null>(null);
     console.log(activeFile);
+
+    const [uploadItems, setUploadItems] = useState<UploadComponentProps[]>([]);
 
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
@@ -63,6 +77,92 @@ export default function DirectoryPage() {
 
     const handleDeleteFileClick = (file: MetaFile) => {
         console.log("Delete file-" + file.id);
+    };
+
+    const handleFileSelection = async (e: ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+
+        const selectedFileList = Array.from(e.target.files);
+
+        const initialItems: UploadComponentProps[] = selectedFileList.map(
+            (file) => ({
+                file,
+                progress: { loaded: 0, total: file.size, percentage: 0 },
+                status: "uploading",
+                controller: new AbortController(),
+            }),
+        );
+
+        setUploadItems(initialItems);
+
+        const uploadPromises = initialItems.map((item) =>
+            UploadService.uploadFile<MetaFile>(
+                { file: item.file, folderId: activeDirectory } as UploadRequest,
+                (progress) => {
+                    setUploadItems((prev) =>
+                        prev.map((upItem) =>
+                            upItem.file === item.file
+                                ? { ...upItem, progress }
+                                : upItem,
+                        ),
+                    );
+                },
+                item.controller?.signal,
+            )
+                .then((resp) => {
+                    const isError = !resp || "errorMessage" in resp;
+                    const errorMessage = isError
+                        ? (resp as { errorMessage?: string })?.errorMessage ||
+                          "Upload failed"
+                        : undefined;
+
+                    setUploadItems((prev) =>
+                        prev.map((upItem) =>
+                            upItem.file === item.file
+                                ? {
+                                      ...upItem,
+                                      status: isError ? "error" : "success",
+                                      error: errorMessage,
+                                  }
+                                : upItem,
+                        ),
+                    );
+                })
+                .catch((err) => {
+                    if (err?.name === "CanceledError" || axios.isCancel(err))
+                        return;
+
+                    setUploadItems((prev) =>
+                        prev.map((upItem) =>
+                            upItem.file === item.file
+                                ? {
+                                      ...upItem,
+                                      status: "error",
+                                      error:
+                                          err?.response?.data?.message ||
+                                          err?.message ||
+                                          "Upload failed",
+                                  }
+                                : upItem,
+                        ),
+                    );
+                }),
+        );
+
+        await Promise.allSettled(uploadPromises);
+    };
+
+    const handleCancelUpload = (fileToCancel: File) => {
+        setUploadItems((prevItems) => {
+            const itemToCancel = prevItems.find(
+                (item) => item.file === fileToCancel,
+            );
+
+            // Abort the active HTTP connection
+            itemToCancel?.controller?.abort();
+
+            return prevItems.filter((item) => item.file !== fileToCancel);
+        });
     };
 
     function FileInfoSidebar(): ReactNode {
@@ -205,6 +305,42 @@ export default function DirectoryPage() {
 
                 // Focus Menu
                 <FocusMenu>
+                    {/* Upload Options */}
+                    <div className="container">
+                        <DividerComponent text="Upload" icon={PlusCircleIcon} />
+                        <input
+                            type="file"
+                            id="navUploadFile"
+                            className="hidden"
+                            multiple
+                            onChange={handleFileSelection}
+                        />
+                        <ActionButton
+                            icon={ArrowUpTrayIcon}
+                            text="Upload Files"
+                            theme="primary"
+                            onClick={() => {
+                                document
+                                    .getElementById("navUploadFile")
+                                    ?.click();
+                            }}
+                        />
+                        {uploadItems.length > 0 && (
+                            <div className="mt-3 space-y-2 max-h-60 overflow-y-auto">
+                                {uploadItems.map((item, idx) => (
+                                    <UploadComponent
+                                        key={`${item.file.name}-${idx}`}
+                                        file={item.file}
+                                        progress={item.progress}
+                                        status={item.status}
+                                        error={item.error}
+                                        handleCancelClick={handleCancelUpload}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
                     {/* Folders */}
                     <div className="container">
                         <DividerComponent
@@ -237,14 +373,14 @@ export default function DirectoryPage() {
                                         text={"8"}
                                         customise="size-4.5"
                                         theme="secondary-blur"
-                                        hoverEffect="pointer-events-none"
+                                        customiseLayer="pointer-events-none"
                                     />
                                 </div>
                                 <IconComponent
                                     icon={ChevronRightIcon}
                                     customise="size-6"
                                     theme="blur"
-                                    hoverEffect="pointer-events-none"
+                                    customiseLayer="pointer-events-none"
                                 />
                             </li>
                             <li className="active">
@@ -255,14 +391,14 @@ export default function DirectoryPage() {
                                         text={"8"}
                                         customise="size-4.5"
                                         theme="secondary"
-                                        hoverEffect="pointer-events-none"
+                                        customiseLayer="pointer-events-none"
                                     />
                                 </div>
                                 <IconComponent
                                     icon={ChevronRightIcon}
                                     customise="size-6"
                                     theme="blur"
-                                    hoverEffect="pointer-events-none"
+                                    customiseLayer="pointer-events-none"
                                 />
                             </li>
                             <li className="">
@@ -279,7 +415,7 @@ export default function DirectoryPage() {
                                     icon={ChevronRightIcon}
                                     customise="size-6"
                                     theme="blur"
-                                    hoverEffect="pointer-events-none"
+                                    customiseLayer="pointer-events-none"
                                 />
                             </li>
                             <li className="">
@@ -296,7 +432,7 @@ export default function DirectoryPage() {
                                     icon={ChevronRightIcon}
                                     customise="size-6"
                                     theme="blur"
-                                    hoverEffect="pointer-events-none"
+                                    customiseLayer="pointer-events-none"
                                 />
                             </li>
                         </ul>

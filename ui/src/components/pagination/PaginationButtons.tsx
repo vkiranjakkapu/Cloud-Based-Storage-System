@@ -36,7 +36,7 @@ export function PaginationButtons<T>({
                     theme={theme ?? "primary-blur"}
                     icon={ChevronLeftIcon}
                     customise={`size-7 rounded-none`}
-                    hoverEffect={`rounded-none`}
+                    customiseLayer={`rounded-none`}
                     onClick={goToPrevPage}
                     disabled={currentPage == 1}
                 />
@@ -58,7 +58,7 @@ export function PaginationButtons<T>({
                     theme={theme ?? "primary-blur"}
                     icon={ChevronRightIcon}
                     customise={`size-7 rounded-none`}
-                    hoverEffect={`rounded-none`}
+                    customiseLayer={`rounded-none`}
                     onClick={goToNextPage}
                     disabled={totalPages == currentPage}
                 />

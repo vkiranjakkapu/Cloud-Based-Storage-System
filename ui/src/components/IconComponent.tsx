@@ -1,4 +1,4 @@
-import type { HTMLAttributes, KeyboardEvent, MouseEvent } from "react";
+import type { HTMLAttributes } from "react";
 import type { IconProps } from "./Commons";
 
 export type IconThemes =
@@ -10,48 +10,28 @@ export type IconThemes =
     | "";
 
 export type IconComponentProps = HTMLAttributes<HTMLDivElement> & {
-    type?: "button" | "div";
     icon?: IconProps;
     text?: string;
     theme?: IconThemes;
     customise?: string;
-    hoverEffect?: string;
+    customiseLayer?: string;
     customiseIcon?: string;
     customiseText?: string;
     disabled?: boolean;
 };
 
 export default function IconComponent({
-    type = "div",
     icon: Icon,
     text,
     theme,
     customise,
-    hoverEffect,
+    customiseLayer: hoverEffect,
     customiseIcon,
     customiseText,
     disabled = false,
     onClick,
     ...props
 }: IconComponentProps) {
-    const submitForm = (target: HTMLElement) => {
-        const form = target.closest("form");
-        if (form) {
-            form.requestSubmit();
-        }
-    };
-
-    const handleClick = (e: MouseEvent<HTMLDivElement>) => {
-        submitForm(e.currentTarget);
-    };
-
-    const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-        if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            submitForm(e.currentTarget);
-        }
-    };
-
     return (
         <div
             className={`relative cursor-pointer rounded-full overflow-hidden 
@@ -63,10 +43,7 @@ export default function IconComponent({
                             *:pointer-events-none *:cursor-not-allowed 
                             opacity-70`
                         }`}
-            onClick={type && type === "div" ? onClick : handleClick}
-            role="button"
-            tabIndex={0}
-            onKeyDown={handleKeyDown}
+            onClick={onClick}
             {...props}
         >
             {theme === "primary" ? (

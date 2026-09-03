@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
 import { AppConfig } from "../config/AppConfig";
 import { handleErrorResponse } from "../utils/ErrorHandler";
 import configureRequestInterceptor from "./RequestInterceptor";
@@ -38,6 +38,7 @@ export type ApiClientProps = {
     uri: string;
     service: "identity" | "profile" | "storage" | "reports";
     payload?: unknown;
+    config?: AxiosRequestConfig<unknown, unknown>;
 };
 
 export async function apiClient<T>({
@@ -45,6 +46,7 @@ export async function apiClient<T>({
     uri,
     service,
     payload,
+    config,
 }: ApiClientProps): Promise<ApiResponse<T> | ErrorResponse> {
     try {
         let response, url;
@@ -60,15 +62,15 @@ export async function apiClient<T>({
         }
 
         if (type.toLowerCase() == "post") {
-            response = await api.post(url + uri, payload);
+            response = await api.post(url + uri, payload, config);
         } else if (type.toLowerCase() == "put") {
-            response = await api.put(url + uri, payload);
+            response = await api.put(url + uri, payload, config);
         } else if (type.toLowerCase() == "patch") {
-            response = await api.patch(url + uri, payload);
+            response = await api.patch(url + uri, payload, config);
         } else if (type.toLowerCase() == "delete") {
-            response = await api.delete(url + uri);
+            response = await api.delete(url + uri, config);
         } else {
-            response = await api.get(url + uri);
+            response = await api.get(url + uri, config);
         }
 
         const apiResponse = response.data as {
