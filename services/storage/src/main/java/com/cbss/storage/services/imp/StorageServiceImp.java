@@ -2,6 +2,7 @@ package com.cbss.storage.services.imp;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -9,6 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,6 +97,29 @@ public class StorageServiceImp implements StorageService {
         }
         System.out.println(folderPath);
         return folderPath;
+    }
+
+    @Override
+    public Resource loadAsResource(String filePath) {
+        try {
+            Path path = Path.of(filePath);
+
+            Resource resource = new UrlResource(path.toUri());
+
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new BusinessException(
+                        StorageExceptions.RESOURCE_NOT_FOUND,
+                        "File not found");
+            }
+
+            return resource;
+
+        } catch (MalformedURLException e) {
+            throw new BusinessException(
+                    StorageExceptions.STORAGE_FAILED,
+                    "Failed to load file",
+                    e);
+        }
     }
 
 }

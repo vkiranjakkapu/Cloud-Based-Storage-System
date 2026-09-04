@@ -4,6 +4,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.core.io.Resource;
+
 import com.cbss.storage.models.Folder;
 
 public interface StorageService {
@@ -15,5 +17,7 @@ public interface StorageService {
     Path getPathForFolder(UUID folderId);
 
     Path resolveFolder(Folder folder);
+
+    Resource loadAsResource(String filePath);
 
 }
