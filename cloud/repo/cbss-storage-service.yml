@@ -7,3 +7,14 @@ eureka:
     client:
         webclient:
             enabled: true
+
+storage:
+    local-storage:
+        base-path: "filestore"
+
+spring:
+    servlet:
+        multipart:
+            enabled: true
+            max-file-size: 20MB
+            max-request-size: 10MB

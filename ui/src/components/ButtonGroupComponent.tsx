@@ -47,7 +47,7 @@ export function ButtonGroupComponent({
                         <ActionButton
                             key={idx}
                             customise={`size-7 rounded-none`}
-                            hoverEffect={`rounded-none`}
+                            customiseLayer={`rounded-none`}
                             theme={activeTheme}
                             onClick={btn.onClick}
                             {...{ ...btn, active: btn.active + "" }}

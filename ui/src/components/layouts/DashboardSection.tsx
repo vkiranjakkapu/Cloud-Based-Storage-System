@@ -15,9 +15,15 @@ import {
     PaginationButtons,
     type PaginationButtonsProps,
 } from "../pagination/PaginationButtons";
+import SpinnerComponent, {
+    type SpinnerComponentProps,
+} from "../SpinnerComponent";
 
 type SectionLayoutProps<T, K> = {
     children: ReactNode;
+    spinner?: SpinnerComponentProps & {
+        isLoading: boolean;
+    };
     className?: string;
     header?: {
         title?: string;
@@ -37,6 +43,7 @@ type SectionLayoutProps<T, K> = {
 
 export default function DashboardSection<T, K>({
     children,
+    spinner,
     className,
     header,
     useDirectoryTheme,
@@ -93,7 +100,7 @@ export default function DashboardSection<T, K>({
                                         return (
                                             <span
                                                 key={idx}
-                                                className={`cursor-pointer hover:opacity-100 ${isLast ? `text-primary` : `opacity-70`}`}
+                                                className={`cursor-pointer capitalize hover:opacity-100 ${isLast ? `text-primary` : `opacity-70`}`}
                                                 onClick={() =>
                                                     navigate(
                                                         path.uri ??
@@ -169,7 +176,16 @@ export default function DashboardSection<T, K>({
             )}
 
             {/* Content */}
-            {children}
+            {spinner && spinner.isLoading ? (
+                <div className="border-none">
+                    <SpinnerComponent
+                        {...spinner}
+                        animate={`animate-pulse ${spinner.animate}`}
+                    />
+                </div>
+            ) : (
+                children
+            )}
         </div>
     );
 }

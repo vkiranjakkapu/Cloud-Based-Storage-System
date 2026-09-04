@@ -22,6 +22,10 @@ export default function AppRoutes() {
                     path={RoutePaths.DIRECTORY}
                     element={<DirectoryPage />}
                 />
+                <Route
+                    path={RoutePaths.FOLDER}
+                    element={<DirectoryPage />}
+                />
                 <Route path={RoutePaths.GROUPS} element={<GroupsPage />} />
                 <Route path={RoutePaths.PROFILE} element={<ProfilePage />} />
                 <Route element={<AdminLayout />}>

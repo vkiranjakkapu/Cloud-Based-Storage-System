@@ -42,6 +42,7 @@ public class UserServiceImpl implements UserService {
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationContext authenticationContext;
+	private final StorageService storageService;
 
 	private ObjectMapper mapper = new ObjectMapper();
 
@@ -77,6 +78,7 @@ public class UserServiceImpl implements UserService {
 				.build();
 
 		User saved = userRepository.save(user);
+		storageService.createRootDirectoryForUser(user.getId(), user.getEmail());
 
 		return mapToResponse(saved, true);
 	}
@@ -150,7 +152,9 @@ public class UserServiceImpl implements UserService {
 				.roles(Set.of(role))
 				.password(passwordEncoder.encode(Optional.ofNullable(request.password()).orElse("password")))
 				.build();
-		return mapToResponse(userRepository.save(user));
+		userRepository.save(user);
+		storageService.createRootDirectoryForUser(user.getId(), user.getEmail());
+		return mapToResponse(user);
 	}
 
 	@Override

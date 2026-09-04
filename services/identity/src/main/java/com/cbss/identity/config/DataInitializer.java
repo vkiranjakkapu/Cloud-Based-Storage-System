@@ -13,6 +13,7 @@ import com.cbss.identity.entities.RoleType;
 import com.cbss.identity.entities.User;
 import com.cbss.identity.repository.RoleRepository;
 import com.cbss.identity.repository.UserRepository;
+import com.cbss.identity.services.imp.StorageService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +24,8 @@ public class DataInitializer implements CommandLineRunner {
 	private final RoleRepository roleRepository;
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+
+	private final StorageService storageService;
 
 	@Override
 	public void run(String... args) {
@@ -56,6 +59,7 @@ public class DataInitializer implements CommandLineRunner {
 					.roles(Set.of(adminRole)).build();
 
 			userRepository.save(admin);
+			storageService.createRootDirectoryForUser(admin.getId(), admin.getEmail());
 		}
 	}
 

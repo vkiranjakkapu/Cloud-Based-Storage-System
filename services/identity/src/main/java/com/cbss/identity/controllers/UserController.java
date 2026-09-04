@@ -71,7 +71,7 @@ public class UserController {
 
     @Operation(summary = "Registration By Users")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Token refreshed"),
+            @ApiResponse(responseCode = "200", description = "User created"),
             @ApiResponse(responseCode = "400", description = "Validation failed"),
     })
     @PostMapping("/register")

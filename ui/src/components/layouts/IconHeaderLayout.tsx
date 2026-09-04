@@ -43,7 +43,7 @@ export default function IconHeaderLayout({
                     />
                     <div className="flex-1 flex flex-wrap justify-between items-center">
                         <div className="space-y-0.5 mb-6 md:mb-0">
-                            <h1 className="text-sm md:text-lg font-semibold">
+                            <h1 className="text-sm md:text-lg font-semibold capitalize">
                                 {title}
                             </h1>
                             <span className="text-sm">{description}</span>

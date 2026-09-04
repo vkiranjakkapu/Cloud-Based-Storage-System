@@ -104,28 +104,26 @@ export default function LoginForm() {
             confirmPassword,
         };
 
-        AuthService.register<ApiResponse<UserProfile>>(payload).then(
-            (resp) => {
-                if (resp && !("errorMessage" in resp)) {
-                    login({
-                        email: formData.get("email"),
-                        password: formData.get("password"),
-                    } as LoginRequest);
-                } else {
-                    setNotifications("registration", {
-                        type: "error",
-                        messages:
-                            resp.validationErrors.length === 0
-                                ? [resp.errorMessage]
-                                : [
-                                      ...resp.validationErrors.map(
-                                          (vr) => vr.field + " " + vr.message,
-                                      ),
-                                  ],
-                    });
-                }
-            },
-        );
+        AuthService.register<ApiResponse<UserProfile>>(payload).then((resp) => {
+            if (resp && !("errorMessage" in resp)) {
+                login({
+                    email: formData.get("email"),
+                    password: formData.get("password"),
+                } as LoginRequest);
+            } else {
+                setNotifications("registration", {
+                    type: "error",
+                    messages:
+                        resp.validationErrors.length === 0
+                            ? [resp.errorMessage]
+                            : [
+                                  ...resp.validationErrors.map(
+                                      (vr) => vr.field + " " + vr.message,
+                                  ),
+                              ],
+                });
+            }
+        });
     }
 
     if (loginForm) {
@@ -161,6 +159,7 @@ export default function LoginForm() {
                     required
                 />
                 <ActionButton
+                    type="submit"
                     icon={LockOpenIcon}
                     theme="primary"
                     text="Login"
@@ -233,6 +232,7 @@ export default function LoginForm() {
                 required
             />
             <ActionButton
+                type="submit"
                 icon={ArrowRightCircleIcon}
                 theme="primary"
                 text="Register"

@@ -114,7 +114,7 @@ export default function NavSidebarLayout({
 
                 {/* Main Context Canvas View */}
                 <div
-                    className={`flex-1 p-6 overflow-x-clip overflow-y-auto ${rightSidebar && rightSidebar.active && `lg:mr-84`}`}
+                    className={`flex-1 p-6 overflow-x-clip overflow-y-auto ${rightSidebar && rightSidebar.active ? `lg:mr-84` : ""}`}
                 >
                     {dashboard ?? (
                         <>

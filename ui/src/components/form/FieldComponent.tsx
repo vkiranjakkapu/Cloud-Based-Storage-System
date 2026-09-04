@@ -20,8 +20,8 @@ export default function FieldComponent({
                 focus-within:border-[color-mix(in_srgb,currentColor_30%,transparent)]
                 dark:focus-within:border-[color-mix(in_srgb,currentColor_60%,transparent)]
 
-                bg-slate-100 dark:bg-secondary-dark
-                rounded-lg border border-slate-300 dark:border-secondary-accent 
+                bg-white/70 dark:bg-secondary-dark
+                rounded-lg border border-slate-200 dark:border-cool/15
                 ${customise}`}
         >
             {children}

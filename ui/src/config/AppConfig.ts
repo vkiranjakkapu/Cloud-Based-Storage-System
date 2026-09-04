@@ -6,5 +6,5 @@ export const AppConfig = {
     REPORTS_SERVICE_URL: "reports/api/v1",
 
     LOCAL_AUTH_KEY: "cbss_auth",
-    PUBLIC_ENDPOINTS: ["/auth/"],
+    PUBLIC_ENDPOINTS: ["/auth/","/users/register"],
 };

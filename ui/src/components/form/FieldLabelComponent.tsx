@@ -3,11 +3,13 @@ import type { IconProps } from "../Commons";
 
 export interface LabelComponentProps extends LabelHTMLAttributes<HTMLLabelElement> {
     icon?: IconProps;
+    iconAfter?: boolean;
     text?: string;
 }
 
 export default function FieldLabelComponent({
     icon: Icon,
+    iconAfter = false,
     text,
     ...props
 }: LabelComponentProps) {
@@ -18,12 +20,17 @@ export default function FieldLabelComponent({
             `}
             {...props}
         >
-            {Icon && (
+            {!iconAfter && Icon && (
                 <span>
                     <Icon className="size-5" />
                 </span>
             )}
             {text && <span>{text}</span>}
+            {iconAfter && Icon && (
+                <span>
+                    <Icon className="size-5" />
+                </span>
+            )}
         </label>
     );
 }

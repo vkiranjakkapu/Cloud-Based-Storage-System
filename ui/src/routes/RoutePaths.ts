@@ -6,7 +6,8 @@ export const RoutePaths = {
     GROUPS: "/groups",
 
     DIRECTORY: "/directory",
-    FOLDER: "/files/:folder",
+    FOLDER: "/directory/:folderId",
+    FILE: "/directory/:folderId/:fileId",
 
     USERS: "/users",
     PROFILE: "/profile",
