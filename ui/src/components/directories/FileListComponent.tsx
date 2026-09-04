@@ -3,7 +3,8 @@ import {
     InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import type { Dispatch, HTMLAttributes, SetStateAction } from "react";
-import type { MetaFile } from "../../pages/directory/FilesList";
+import type { MetaFile } from "../../services/FileService";
+import { formatBytes } from "../../utils/FileUploadHelper";
 import { renderCellValue, type IconProps } from "../Commons";
 import type { FloatingMenuComponentProps } from "../floatingMenu/FloatingMenuComponent";
 import FloatingMenuComponent from "../floatingMenu/FloatingMenuComponent";
@@ -11,7 +12,7 @@ import IconComponent, { type IconComponentProps } from "../IconComponent";
 
 type FileListComponentProps = HTMLAttributes<HTMLDivElement> & {
     file: MetaFile;
-    dropdown: FloatingMenuComponentProps<MetaFile>;
+    dropdown?: FloatingMenuComponentProps<MetaFile>;
     className?: string;
     showFileSize?: boolean;
     infoButton?: Omit<IconComponentProps, "onClick"> & {
@@ -74,21 +75,21 @@ export default function FileListComponent({
                 `}
             >
                 <h2
-                    className={`fileName text-sm md:@md:text-base truncate md:@xs:w-[20ch] md:@md:w-[30ch]`}
+                    className={`fileName text-sm mr-auto truncate w-full md:@xs:w-[20ch] md:@md:text-base`}
                 >
                     {file.fileName}
                 </h2>
-                <span className="text-xs mr-auto md:@md:mr-0 md:@md:text-base md:@sm:text-center">
-                    {renderCellValue(file.uploaded)}
-                </span>
                 {showOwner && (
-                    <span className="text-xs md:md:@md:w-[25ch] truncate md:md:@md:text-base">
+                    <span className="text-xs truncate md:@md:text-base">
                         {"Venkata Kiran J"}
                     </span>
                 )}
+                <span className="text-xs mr-auto md:@md:mr-0 md:@md:text-base md:@sm:text-center">
+                    {renderCellValue(file.createdAt)}
+                </span>
                 {showFileSize && (
                     <span className="text-xs md:@md:text-base md:@sm:text-center">
-                        {file.size}
+                        {formatBytes(file.fileSize)}
                     </span>
                 )}
             </div>
@@ -104,9 +105,11 @@ export default function FileListComponent({
                     />
                 </div>
             )}
-            <div className="cursor-pointer group my-auto">
-                <FloatingMenuComponent {...dropdown} />
-            </div>
+            {dropdown && (
+                <div className="cursor-pointer group my-auto">
+                    <FloatingMenuComponent {...dropdown} />
+                </div>
+            )}
         </div>
     );
 }

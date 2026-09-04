@@ -21,4 +21,8 @@ public interface FolderRepository extends JpaRepository<Folder, UUID> {
 
     List<Folder> findAllByParentAndIsDeletedFalse(Folder parent);
 
+    Optional<Folder> findByNameAndParent(String folderName, Folder folder);
+
+    Optional<Folder> findByNameAndParentAndOwnerId(String folderName, Folder folder, UUID ownerId);
+
 }

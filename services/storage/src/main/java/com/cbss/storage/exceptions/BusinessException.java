@@ -10,22 +10,26 @@ public class BusinessException extends RuntimeException {
         super(message);
     }
 
-    public BusinessException(ErrorDefinition exceptions, String message) {
-        super(message);
-        this.exception = exceptions;
+    public BusinessException(ErrorDefinition exception) {
+        this.exception = exception;
     }
 
-    public BusinessException(ErrorDefinition exceptions, String message, Throwable e) {
+    public BusinessException(ErrorDefinition exception, String message) {
+        super(message);
+        this.exception = exception;
+    }
+
+    public BusinessException(ErrorDefinition exception, String message, Throwable e) {
         super(message, e);
-        this.exception = exceptions;
+        this.exception = exception;
     }
 
     public ErrorDefinition getException() {
         return exception;
     }
 
-    public void setException(ErrorDefinition exceptions) {
-        this.exception = exceptions;
+    public void setException(ErrorDefinition exception) {
+        this.exception = exception;
     }
 
 }

@@ -11,6 +11,7 @@ export type IconThemes =
 
 export type IconComponentProps = HTMLAttributes<HTMLDivElement> & {
     icon?: IconProps;
+    iconAfter?: boolean;
     text?: string;
     theme?: IconThemes;
     customise?: string;
@@ -22,6 +23,7 @@ export type IconComponentProps = HTMLAttributes<HTMLDivElement> & {
 
 export default function IconComponent({
     icon: Icon,
+    iconAfter = false,
     text,
     theme,
     customise,
@@ -35,7 +37,7 @@ export default function IconComponent({
     return (
         <div
             className={`relative cursor-pointer rounded-full overflow-hidden 
-                        flex items-center justify-center
+                        flex items-center justify-center gap-0.5
                         ${customise ?? "size-9.5"}
                         ${
                             disabled &&
@@ -55,7 +57,7 @@ export default function IconComponent({
                             hover:bg-primary/90 dark:hover:bg-primary/80
                             transition-colors duration-100 ${hoverEffect}`}
                     ></div>
-                    {Icon && (
+                    {!iconAfter && Icon && (
                         <Icon
                             className={`relative z-1 text-white pointer-events-none size-4.5 ${customiseIcon}`}
                         />
@@ -67,6 +69,11 @@ export default function IconComponent({
                             {text}
                         </span>
                     )}
+                    {iconAfter && Icon && (
+                        <Icon
+                            className={`relative z-1 text-white pointer-events-none size-4.5 ${customiseIcon}`}
+                        />
+                    )}
                 </>
             ) : theme === "primary-blur" ? (
                 <>
@@ -77,7 +84,7 @@ export default function IconComponent({
                             hover:bg-warm dark:hover:bg-warm/25
                             transition-colors duration-100 ${hoverEffect}`}
                     ></div>
-                    {Icon && (
+                    {!iconAfter && Icon && (
                         <Icon
                             className={`relative z-1 text-primary pointer-events-none size-4.5 ${customiseIcon}`}
                         />
@@ -89,6 +96,11 @@ export default function IconComponent({
                             {text}
                         </span>
                     )}
+                    {iconAfter && Icon && (
+                        <Icon
+                            className={`relative z-1 text-primary pointer-events-none size-4.5 ${customiseIcon}`}
+                        />
+                    )}
                 </>
             ) : theme === "secondary" ? (
                 <>
@@ -99,7 +111,7 @@ export default function IconComponent({
                             hover:bg-secondary dark:hover:bg-cool/85
                             transition-colors duration-100 ${hoverEffect}`}
                     ></div>
-                    {Icon && (
+                    {!iconAfter && Icon && (
                         <Icon
                             className={`relative z-1 text-white dark:text-secondary pointer-events-none size-4.5 ${customiseIcon}`}
                         />
@@ -111,6 +123,11 @@ export default function IconComponent({
                             {text}
                         </span>
                     )}
+                    {iconAfter && Icon && (
+                        <Icon
+                            className={`relative z-1 text-white dark:text-secondary pointer-events-none size-4.5 ${customiseIcon}`}
+                        />
+                    )}
                 </>
             ) : theme === "secondary-blur" ? (
                 <>
@@ -121,7 +138,7 @@ export default function IconComponent({
                             group-hover:bg-secondary/15 dark:group-hover:bg-secondary-dark/80
                             transition-colors duration-100 ${hoverEffect}`}
                     ></div>
-                    {Icon && (
+                    {!iconAfter && Icon && (
                         <Icon
                             className={`relative z-1 text-secondary/70 dark:text-cool pointer-events-none size-4.5 ${customiseIcon}`}
                         />
@@ -133,6 +150,11 @@ export default function IconComponent({
                             {text}
                         </span>
                     )}
+                    {iconAfter && Icon && (
+                        <Icon
+                            className={`relative z-1 text-secondary/70 dark:text-cool pointer-events-none size-4.5 ${customiseIcon}`}
+                        />
+                    )}
                 </>
             ) : theme === "blur" ? (
                 <>
@@ -142,7 +164,7 @@ export default function IconComponent({
                             group-hover:bg-cool/50 hover:bg-cool/50
                             transition-colors duration-100 ${hoverEffect}`}
                     ></div>
-                    {Icon && (
+                    {!iconAfter && Icon && (
                         <Icon
                             className={`relative z-1 text-white dark:text-cool pointer-events-none size-4.5 ${customiseIcon}`}
                         />
@@ -154,6 +176,11 @@ export default function IconComponent({
                             {text}
                         </span>
                     )}
+                    {iconAfter && Icon && (
+                        <Icon
+                            className={`relative z-1 text-white dark:text-cool pointer-events-none size-4.5 ${customiseIcon}`}
+                        />
+                    )}
                 </>
             ) : (
                 <>
@@ -164,7 +191,7 @@ export default function IconComponent({
                             hover:bg-slate-200 dark:hover:bg-secondary-dark/70
                             transition-colors duration-100 ${hoverEffect}`}
                     ></div>
-                    {Icon && (
+                    {!iconAfter && Icon && (
                         <Icon
                             className={`relative z-1 pointer-events-none size-4.5 text-secondary/80 dark:text-cool ${customiseIcon}`}
                         />
@@ -175,6 +202,11 @@ export default function IconComponent({
                         >
                             {text}
                         </span>
+                    )}
+                    {iconAfter && Icon && (
+                        <Icon
+                            className={`relative z-1 pointer-events-none size-4.5 text-secondary/80 dark:text-cool ${customiseIcon}`}
+                        />
                     )}
                 </>
             )}

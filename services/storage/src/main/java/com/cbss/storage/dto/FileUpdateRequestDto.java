@@ -6,7 +6,7 @@ import com.cbss.storage.enums.UpdateType;
 
 import jakarta.validation.constraints.NotEmpty;
 
-public record FolderUpdateRequestDto(
+public record FileUpdateRequestDto(
 		@NotEmpty UUID id,
 		@NotEmpty String name,
 		UUID targetId,

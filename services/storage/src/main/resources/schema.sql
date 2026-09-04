@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS files (
     folder_id UUID NULL,
 
     file_name VARCHAR(100) NOT NULL,
+    file_size BIGINT NOT NULL,
     file_path VARCHAR(255) NOT NULL,
     mime_type VARCHAR(255) NULL,
 

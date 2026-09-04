@@ -29,7 +29,7 @@ export function UploadComponent({
 }: UploadComponentProps) {
     return (
         <div className="p-2 space-y-1 border border-slate-200 dark:border-cool/15 bg-slate-100 dark:bg-secondary rounded-md shadow-xs text-sm">
-            <div className="flex gap-0.5 items-center justify-between">
+            <div className="flex gap-0.5 items-center justify-around">
                 <div className="flex-col gap-0.5 items-center justify-center">
                     {status === "success" ? (
                         <CheckCircleIcon className="size-5 text-emerald-500" />
@@ -39,7 +39,9 @@ export function UploadComponent({
                         <SpinnerComponent />
                     )}
                 </div>
-                <div className={`flex-1 flex-col items-start justify-start`}>
+                <div
+                    className={`flex-1 flex-col items-start justify-start max-w-[22ch]`}
+                >
                     <p className="w-full truncate">{file?.name}</p>
                     {status !== "error" && (
                         <p className="text-xs mr-auto">

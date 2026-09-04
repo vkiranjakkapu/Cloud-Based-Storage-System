@@ -1,14 +1,16 @@
+export type SpinnerComponentProps = {
+    text?: string;
+    size?: string;
+    customize?: string;
+    animate?: string;
+};
+
 export default function SpinnerComponent({
     text,
     size,
     customize,
     animate,
-}: {
-    text?: string;
-    size?: string;
-    customize?: string;
-    animate?: string;
-}) {
+}: SpinnerComponentProps) {
     return (
         <div
             className={`container inline-flex items-center gap-1.5 justify-center ${customize}`}

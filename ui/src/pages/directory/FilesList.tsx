@@ -1,5 +1,5 @@
 import {
-    DocumentPlusIcon,
+    ArrowUpTrayIcon,
     DocumentTextIcon,
     ListBulletIcon,
     PencilIcon,
@@ -20,18 +20,18 @@ import usePagination from "../../components/pagination/usePagination";
 
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import FileListComponent from "../../components/directories/FileListComponent";
-
-export interface MetaFile {
-    id: number;
-    fileName: string;
-    size: string;
-    uploaded: unknown;
-}
+import { type SpinnerComponentProps } from "../../components/SpinnerComponent";
+import type { MetaFile } from "../../services/DirectoryService";
 
 type FilesListProps = {
     files: MetaFile[];
+    title: string;
+    spinner?: SpinnerComponentProps & {
+        isLoading: boolean;
+    };
 
     handleDoubleClick: (item: MetaFile) => void;
+    handleFileUploadClick?: () => void;
     handleInfoButtonClick?: (file: MetaFile) => void;
     handleRenameFileClick?: (file: MetaFile) => void;
     handleShareFileClick?: (file: MetaFile) => void;
@@ -41,7 +41,10 @@ type FilesListProps = {
 
 export default function FilesList({
     files,
+    title,
+    spinner,
     handleDoubleClick,
+    handleFileUploadClick,
     handleInfoButtonClick,
     handleRenameFileClick,
     handleShareFileClick,
@@ -65,7 +68,7 @@ export default function FilesList({
         if (!queryString) return files;
 
         const fileteredFiles = files.filter((fl) =>
-            fl.fileName.includes(queryString),
+            fl.fileName.match(queryString),
         );
 
         return fileteredFiles;
@@ -84,193 +87,220 @@ export default function FilesList({
     return (
         <DashboardSection
             header={{
-                title: "Labmantix",
-                description: "21 Files",
+                title,
+                description:
+                    files.length > 0 ? `${files.length} File(s)` : undefined,
                 actionElements: [
                     {
                         button: {
-                            icon: DocumentPlusIcon,
-                            text: "New Files",
+                            icon: ArrowUpTrayIcon,
+                            customiseIcon: "size-4!",
+                            text: "Upload File",
+                            onClick() {
+                                handleFileUploadClick?.();
+                            },
                         },
                     },
-                    {
-                        iconGroup: {
-                            buttons: [
-                                {
-                                    icon: Squares2X2Icon,
-                                    active: iconView,
-                                    onClick: () => {
-                                        setIconView(true);
-                                        setItemsPerPage(10);
-                                    },
-                                },
-                                {
-                                    icon: ListBulletIcon,
-                                    active: !iconView,
-                                    onClick: () => {
-                                        setIconView(false);
-                                        setItemsPerPage(6);
-                                    },
-                                },
-                            ],
-                        },
-                    },
+                    ...(files.length > 0
+                        ? [
+                              {
+                                  iconGroup: {
+                                      buttons: [
+                                          {
+                                              icon: Squares2X2Icon,
+                                              active: iconView,
+                                              onClick: () => {
+                                                  setIconView(true);
+                                                  setItemsPerPage(10);
+                                              },
+                                          },
+                                          {
+                                              icon: ListBulletIcon,
+                                              active: !iconView,
+                                              onClick: () => {
+                                                  setIconView(false);
+                                                  setItemsPerPage(6);
+                                              },
+                                          },
+                                      ],
+                                  },
+                              },
+                          ]
+                        : []),
                 ],
             }}
+            spinner={spinner}
         >
-            <DashboardSection
-                search={{
-                    id: "searchFiles",
-                    placeholder: "Filename",
-                    customise: "w-full md:w-3/5 lg:w-3/4",
-                    label: { icon: DocumentTextIcon },
-                    onChange: (e) => {
-                        setQueryString(e.target.value);
-                    },
-                }}
-                pagination={{
-                    totalPages,
-                    currentPage,
-                    goToNextPage,
-                    goToPrevPage,
-                    changePage,
-                    theme: "primary",
-                }}
-            >
-                {iconView && (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
-                        {currentItems.map((file) => {
-                            return (
-                                <FileIconComponent
-                                    key={file.id}
-                                    file={file}
-                                    dropdown={{
-                                        type: "icon",
-                                        props: {
-                                            onClick: () => {
-                                                setActiveFile(file);
-                                            },
-                                        },
-                                        items: [
-                                            {
-                                                target: file,
-                                                icon: {
-                                                    icon: TrashIcon,
-                                                    customiseIcon:
-                                                        "text-rose-500!",
-                                                },
-                                                title: "Delete",
-                                                onClick: (file) => {
-                                                    handleDeleteFileClick?.(
-                                                        file as MetaFile,
-                                                    );
+            {files.length > 0 ? (
+                <DashboardSection
+                    search={
+                        files.length > 0
+                            ? {
+                                  id: "searchFiles",
+                                  placeholder: "Filename",
+                                  customise: "w-full md:w-3/5 lg:w-3/4",
+                                  label: { icon: DocumentTextIcon },
+                                  onChange: (e) => {
+                                      setQueryString(e.target.value);
+                                  },
+                              }
+                            : undefined
+                    }
+                    pagination={{
+                        totalPages,
+                        currentPage,
+                        goToNextPage,
+                        goToPrevPage,
+                        changePage,
+                        theme: "primary",
+                    }}
+                >
+                    {iconView && (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
+                            {currentItems.map((file) => {
+                                return (
+                                    <FileIconComponent
+                                        key={file.id}
+                                        file={file}
+                                        dropdown={{
+                                            type: "icon",
+                                            props: {
+                                                onClick: () => {
+                                                    setActiveFile(file);
                                                 },
                                             },
-                                            {
-                                                target: file,
-                                                icon: { icon: ShareIcon },
-                                                title: "Share",
-                                                onClick: (file) => {
-                                                    handleShareFileClick?.(
-                                                        file as MetaFile,
-                                                    );
+                                            items: [
+                                                {
+                                                    target: file,
+                                                    icon: {
+                                                        icon: TrashIcon,
+                                                        customiseIcon:
+                                                            "text-rose-500!",
+                                                    },
+                                                    title: "Delete",
+                                                    onClick: (file) => {
+                                                        handleDeleteFileClick?.(
+                                                            file as MetaFile,
+                                                        );
+                                                    },
                                                 },
+                                                {
+                                                    target: file,
+                                                    icon: { icon: ShareIcon },
+                                                    title: "Share",
+                                                    onClick: (file) => {
+                                                        handleShareFileClick?.(
+                                                            file as MetaFile,
+                                                        );
+                                                    },
+                                                },
+                                                {
+                                                    target: file,
+                                                    icon: { icon: PencilIcon },
+                                                    title: "Rename",
+                                                    onClick: (file) => {
+                                                        handleRenameFileClick?.(
+                                                            file as MetaFile,
+                                                        );
+                                                    },
+                                                },
+                                            ],
+                                            menuId: "fileIconView-" + file.id,
+                                            activeMenu,
+                                            setActiveMenu,
+                                        }}
+                                        isActive={activeFile?.id === file.id}
+                                        onActiveChange={(file) =>
+                                            setActiveFile(file)
+                                        }
+                                        handleInfoClick={(file) => {
+                                            handleInfoButtonClick?.(file);
+                                        }}
+                                        handleDoubleClick={handleDoubleClick}
+                                        clearActiveMenu={() =>
+                                            setActiveMenu(null)
+                                        }
+                                    />
+                                );
+                            })}
+                        </div>
+                    )}
+                    {!iconView && (
+                        <div className="space-y-1">
+                            {currentItems.map((file) => {
+                                return (
+                                    <FileListComponent
+                                        key={file.id}
+                                        file={file}
+                                        infoButton={{
+                                            onClick: (file) =>
+                                                handleInfoButtonClick?.(file),
+                                        }}
+                                        dropdown={{
+                                            type: "icon",
+                                            useIcon: EllipsisVerticalIcon,
+                                            props: {
+                                                theme: "secondary-blur",
                                             },
-                                            {
-                                                target: file,
-                                                icon: { icon: PencilIcon },
-                                                title: "Rename",
-                                                onClick: (file) => {
-                                                    handleRenameFileClick?.(
-                                                        file as MetaFile,
-                                                    );
+                                            alignment: "left",
+                                            items: [
+                                                {
+                                                    target: file,
+                                                    icon: {
+                                                        icon: TrashIcon,
+                                                        customiseIcon:
+                                                            "text-rose-500!",
+                                                    },
+                                                    title: "Delete",
+                                                    onClick: (file) => {
+                                                        handleDeleteFileClick?.(
+                                                            file as MetaFile,
+                                                        );
+                                                    },
                                                 },
-                                            },
-                                        ],
-                                        menuId: "fileIconView-" + file.id,
-                                        activeMenu,
-                                        setActiveMenu,
-                                    }}
-                                    isActive={activeFile?.id === file.id}
-                                    onActiveChange={(file) =>
-                                        setActiveFile(file)
-                                    }
-                                    handleInfoClick={(file) => {
-                                        handleInfoButtonClick?.(file);
-                                    }}
-                                    handleDoubleClick={handleDoubleClick}
-                                    clearActiveMenu={() => setActiveMenu(null)}
-                                />
-                            );
-                        })}
-                    </div>
-                )}
-                {!iconView && (
-                    <div className="space-y-1">
-                        {currentItems.map((file) => {
-                            return (
-                                <FileListComponent
-                                    key={file.id}
-                                    file={file}
-                                    infoButton={{
-                                        onClick: (file) =>
-                                            handleInfoButtonClick?.(file),
-                                    }}
-                                    dropdown={{
-                                        type: "icon",
-                                        useIcon: EllipsisVerticalIcon,
-                                        props: {
-                                            theme: "secondary-blur",
-                                        },
-                                        alignment: "left",
-                                        items: [
-                                            {
-                                                target: file,
-                                                icon: {
-                                                    icon: TrashIcon,
-                                                    customiseIcon:
-                                                        "text-rose-500!",
+                                                {
+                                                    target: file,
+                                                    icon: { icon: ShareIcon },
+                                                    title: "Share",
+                                                    onClick: (file) => {
+                                                        handleShareFileClick?.(
+                                                            file as MetaFile,
+                                                        );
+                                                    },
                                                 },
-                                                title: "Delete",
-                                                onClick: (file) => {
-                                                    handleDeleteFileClick?.(
-                                                        file as MetaFile,
-                                                    );
+                                                {
+                                                    target: file,
+                                                    icon: { icon: PencilIcon },
+                                                    title: "Rename",
+                                                    onClick: (file) => {
+                                                        handleRenameFileClick?.(
+                                                            file as MetaFile,
+                                                        );
+                                                    },
                                                 },
-                                            },
-                                            {
-                                                target: file,
-                                                icon: { icon: ShareIcon },
-                                                title: "Share",
-                                                onClick: (file) => {
-                                                    handleShareFileClick?.(
-                                                        file as MetaFile,
-                                                    );
-                                                },
-                                            },
-                                            {
-                                                target: file,
-                                                icon: { icon: PencilIcon },
-                                                title: "Rename",
-                                                onClick: (file) => {
-                                                    handleRenameFileClick?.(
-                                                        file as MetaFile,
-                                                    );
-                                                },
-                                            },
-                                        ],
-                                        menuId: "fileListView-" + file.id,
-                                        activeMenu,
-                                        setActiveMenu,
-                                    }}
-                                    handleDoubleClick={handleDoubleClick}
-                                    trackSelectedFile={trackActiveFile}
-                                />
-                            );
-                        })}
-                    </div>
-                )}
-            </DashboardSection>
+                                            ],
+                                            menuId: "fileListView-" + file.id,
+                                            activeMenu,
+                                            setActiveMenu,
+                                        }}
+                                        handleDoubleClick={handleDoubleClick}
+                                        trackSelectedFile={trackActiveFile}
+                                    />
+                                );
+                            })}
+                        </div>
+                    )}
+                    {queryFiles.length == 0 && (
+                        <div className="text-center capitalize">
+                            <p>No files with given Search</p>
+                        </div>
+                    )}
+                </DashboardSection>
+            ) : (
+                <div className="capitalize text-center">
+                    <p>No Files inside this folder</p>
+                </div>
+            )}
         </DashboardSection>
     );
 }

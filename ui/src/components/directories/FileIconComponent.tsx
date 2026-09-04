@@ -4,11 +4,12 @@ import {
 } from "@heroicons/react/24/outline";
 import { DocumentTextIcon } from "@heroicons/react/24/solid";
 import { type HTMLAttributes } from "react";
-import type { MetaFile } from "../../pages/directory/FilesList";
 import { renderCellValue } from "../Commons";
 import type { FloatingMenuComponentProps } from "../floatingMenu/FloatingMenuComponent";
 import FloatingMenuComponent from "../floatingMenu/FloatingMenuComponent";
 import IconComponent from "../IconComponent";
+import { formatBytes } from "../../utils/FileUploadHelper";
+import type { MetaFile } from "../../services/FileService";
 
 type FileIconComponentProps = HTMLAttributes<HTMLDivElement> & {
     file: MetaFile;
@@ -72,7 +73,10 @@ export default function FileIconComponent({
                         handleInfoClick(file);
                     }}
                 />
-                <div className="ml-auto w-fit! *:*:p-0 *:*:*:first:m-0!">
+                <div
+                    className="ml-auto w-fit! *:*:p-0 *:*:*:first:m-0!"
+                    onClick={(e) => e.stopPropagation()}
+                >
                     <FloatingMenuComponent
                         {...{
                             ...dropdown,
@@ -90,11 +94,17 @@ export default function FileIconComponent({
                 </div>
             </div>
             <DocumentTextIcon className="size-20 sm:size-25" />
-            <div className="space-y-1 max-w-full p-2">
-                <h2 className="text-sm w-full truncate">{file.fileName}</h2>
-                <div className="flex flex-wrap justify-between items-center text-xs">
-                    <span className="">{renderCellValue(file.uploaded)}</span>
-                    <span className="">{file.size}</span>
+            <div className="space-y-1 w-full p-2">
+                <h2 className="text-sm text-center w-full truncate">
+                    {file.fileName}
+                </h2>
+                <div className="flex flex-wrap mx-auto sm:w-2/4 md:w-full justify-between items-center text-xs">
+                    <span className="flex-1 text-center">
+                        {renderCellValue(file.createdAt)}
+                    </span>
+                    <span className="flex-1 text-center">
+                        {formatBytes(file.fileSize)}
+                    </span>
                 </div>
             </div>
         </div>
