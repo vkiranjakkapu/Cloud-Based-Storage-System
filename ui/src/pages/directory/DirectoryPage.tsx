@@ -271,11 +271,12 @@ export default function DirectoryPage() {
 
     const handleOpenFile = (file: MetaFile) => {
         setActiveFile(file);
-        navigate(
+        window.open(
             RoutePaths.FILE.replace(":folderId", file.folder.id).replace(
                 ":fileId",
                 file.id,
             ),
+            "_blank",
         );
     };
 
@@ -491,7 +492,13 @@ export default function DirectoryPage() {
                 <div className="">
                     <DividerComponent text="File info" />
                     <div className="p-2 bg-slate-50 dark:bg-secondary-dark rounded-md shadow-sm border border-slate-200 dark:border-cool/15">
-                        <p>{activeFile?.fileName}</p>
+                        <p
+                            title={activeFile?.fileName}
+                            className="max-w-[30ch] truncate"
+                        >
+                            {activeFile?.fileName}
+                        </p>
+                        <p>File Type: {activeFile?.mimeType.split("/")[1]}</p>
                         <p>Size: {formatBytes(activeFile?.fileSize ?? 0)}</p>
                         <p>
                             Uploaded:{" "}
@@ -501,31 +508,36 @@ export default function DirectoryPage() {
                         </p>
                     </div>
                 </div>
-                <div className="">
-                    <DividerComponent text="Previous Versions" />
-                    <div className="space-y-1">
-                        {fileVersions?.map((version, idx) => {
-                            return (
-                                <div
-                                    key={idx}
-                                    className="p-1 px-2 bg-slate-100 dark:bg-secondary-dark border border-slate-200 dark:border-cool/15 rounded-md shadow-sm"
-                                >
-                                    <p>{version.fileName}</p>
-                                    <div className="flex items-center flex-wrap text-sm gap-2">
-                                        <span>
-                                            {DateFormatter.toFormattedDate(
-                                                version.createdAt,
-                                            )}
-                                        </span>
-                                        <span>
-                                            ({formatBytes(version.fileSize)})
-                                        </span>
+                {fileVersions && fileVersions.length > 1 && (
+                    <div className="">
+                        <DividerComponent text="Previous Versions" />
+                        <div className="space-y-1">
+                            {fileVersions?.slice(1, -1).map((version, idx) => {
+                                return (
+                                    <div
+                                        key={idx}
+                                        className="p-1 px-2 bg-slate-50 dark:bg-secondary-dark border border-slate-200 dark:border-cool/15 rounded-md shadow-sm"
+                                    >
+                                        <p className="max-w-[30ch] truncate">
+                                            {version.fileName}
+                                        </p>
+                                        <div className="flex items-center flex-wrap text-sm gap-2">
+                                            <span>
+                                                {DateFormatter.toFormattedDate(
+                                                    version.createdAt,
+                                                )}
+                                            </span>
+                                            <span>
+                                                ({formatBytes(version.fileSize)}
+                                                )
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })}
+                        </div>
                     </div>
-                </div>
+                )}
                 <div className="">
                     <DividerComponent text="Shared with" />
                     <SharedUserComponent />

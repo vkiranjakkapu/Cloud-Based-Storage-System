@@ -39,6 +39,7 @@ export type ApiClientProps = {
     service: "identity" | "profile" | "storage" | "reports";
     payload?: unknown;
     config?: AxiosRequestConfig<unknown, unknown>;
+    rawResponse?: boolean;
 };
 
 export async function apiClient<T>({
@@ -47,6 +48,7 @@ export async function apiClient<T>({
     service,
     payload,
     config,
+    rawResponse = false,
 }: ApiClientProps): Promise<ApiResponse<T> | ErrorResponse> {
     try {
         let response, url;
@@ -71,6 +73,13 @@ export async function apiClient<T>({
             response = await api.delete(url + uri, config);
         } else {
             response = await api.get(url + uri, config);
+        }
+
+        if (rawResponse) {
+            return {
+                data: response.data as T,
+                statusCode: response.status,
+            };
         }
 
         const apiResponse = response.data as {

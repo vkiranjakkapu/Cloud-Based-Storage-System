@@ -9,6 +9,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import LandingLayout from "./layouts/LandingLayout";
 import ProtectedLayout from "./layouts/ProtectedLayout";
 import { RoutePaths } from "./RoutePaths";
+import FilePage from "../pages/file/FilePage";
 
 export default function AppRoutes() {
     return (
@@ -25,6 +26,10 @@ export default function AppRoutes() {
                 <Route
                     path={RoutePaths.FOLDER}
                     element={<DirectoryPage />}
+                />
+                <Route
+                    path={RoutePaths.FILE}
+                    element={<FilePage />}
                 />
                 <Route path={RoutePaths.GROUPS} element={<GroupsPage />} />
                 <Route path={RoutePaths.PROFILE} element={<ProfilePage />} />

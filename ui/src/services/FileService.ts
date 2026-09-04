@@ -3,6 +3,20 @@ import type { Folder } from "./DirectoryService";
 import type { Group } from "./GroupsService";
 
 class FileService {
+    async getFileContent<T>(
+        fileId?: string,
+    ): Promise<ApiResponse<T> | ErrorResponse> {
+        return apiClient({
+            type: "get",
+            service: "storage",
+            uri: "/files/" + fileId + "/content",
+            rawResponse: true,
+            config: {
+                responseType: "blob",
+            },
+        });
+    }
+
     async getFileById<T>(
         fileId: string,
     ): Promise<ApiResponse<T> | ErrorResponse> {
@@ -12,6 +26,7 @@ class FileService {
             uri: "/files/" + fileId,
         });
     }
+
     async getFileVersions<T>(
         fileId: string,
     ): Promise<ApiResponse<T> | ErrorResponse> {
@@ -21,6 +36,7 @@ class FileService {
             uri: "/files/versions/" + fileId,
         });
     }
+
     async updateFile<T>(
         payload: unknown,
     ): Promise<ApiResponse<T> | ErrorResponse> {
@@ -31,6 +47,7 @@ class FileService {
             payload,
         });
     }
+
     async deleteFile<T>(
         fileId: string,
     ): Promise<ApiResponse<T> | ErrorResponse> {
