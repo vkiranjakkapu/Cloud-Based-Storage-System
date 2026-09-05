@@ -33,6 +33,11 @@
 
 		<dependency>
 			<groupId>com.platform</groupId>
+			<artifactId>restclient</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.platform</groupId>
 			<artifactId>web</artifactId>
 		</dependency>
 		

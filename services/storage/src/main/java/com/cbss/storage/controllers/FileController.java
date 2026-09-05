@@ -51,6 +51,11 @@ public class FileController {
                 .body(resource);
     }
 
+    @GetMapping("/latest")
+    public ResponseEntity<APIResponseDto> getLatestFiles() {
+        return ResponseEntity.ok(APIResponseDto.builder().data(fileService.getLatestFiles()).build());
+    }
+
     @GetMapping("/versions/{fileId}")
     public ResponseEntity<APIResponseDto> getFileVersions(@PathVariable UUID fileId) {
         return ResponseEntity.ok(APIResponseDto.builder().data(fileService.getFileVersions(fileId)).build());

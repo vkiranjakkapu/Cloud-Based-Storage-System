@@ -7,7 +7,7 @@ type IconHeaderLayoutProps = HTMLAttributes<HTMLDivElement> & {
     children: ReactNode;
     title: string;
     description: string;
-    actionButtons: ActionButtonProps[];
+    actionButtons?: ActionButtonProps[];
 };
 
 export default function IconHeaderLayout({
@@ -48,15 +48,17 @@ export default function IconHeaderLayout({
                             </h1>
                             <span className="text-sm">{description}</span>
                         </div>
-                        <div className="hidden sm:flex flex-wrap gap-1">
-                            {actionButtons.map((btn, idx) => (
-                                <IconComponent
-                                    key={idx}
-                                    theme="primary"
-                                    {...btn}
-                                />
-                            ))}
-                        </div>
+                        {actionButtons && (
+                            <div className="hidden sm:flex flex-wrap gap-1">
+                                {actionButtons.map((btn, idx) => (
+                                    <IconComponent
+                                        key={idx}
+                                        theme="primary"
+                                        {...btn}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

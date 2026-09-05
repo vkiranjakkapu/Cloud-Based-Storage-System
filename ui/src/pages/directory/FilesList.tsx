@@ -25,10 +25,12 @@ import type { MetaFile } from "../../services/FileService";
 
 type FilesListProps = {
     files: MetaFile[];
-    title: string;
+    title?: string;
     spinner?: SpinnerComponentProps & {
         isLoading: boolean;
     };
+    showUpload?: boolean;
+    showManageButtons?: boolean;
 
     handleDoubleClick: (item: MetaFile) => void;
     handleFileUploadClick?: () => void;
@@ -43,6 +45,8 @@ export default function FilesList({
     files,
     title,
     spinner,
+    showUpload = false,
+    showManageButtons = true,
     handleDoubleClick,
     handleFileUploadClick,
     handleInfoButtonClick,
@@ -91,16 +95,20 @@ export default function FilesList({
                 description:
                     files.length > 0 ? `${files.length} File(s)` : undefined,
                 actionElements: [
-                    {
-                        button: {
-                            icon: ArrowUpTrayIcon,
-                            customiseIcon: "size-4!",
-                            text: "Upload File",
-                            onClick() {
-                                handleFileUploadClick?.();
-                            },
-                        },
-                    },
+                    ...(showUpload
+                        ? [
+                              {
+                                  button: {
+                                      icon: ArrowUpTrayIcon,
+                                      customiseIcon: "size-4!",
+                                      text: "Upload File",
+                                      onClick() {
+                                          handleFileUploadClick?.();
+                                      },
+                                  },
+                              },
+                          ]
+                        : []),
                     ...(files.length > 0
                         ? [
                               {
@@ -162,53 +170,72 @@ export default function FilesList({
                                     <FileIconComponent
                                         key={file.id}
                                         file={file}
-                                        dropdown={{
-                                            type: "icon",
-                                            props: {
-                                                onClick: () => {
-                                                    setActiveFile(file);
-                                                },
-                                            },
-                                            items: [
-                                                {
-                                                    target: file,
-                                                    icon: {
-                                                        icon: TrashIcon,
-                                                        customiseIcon:
-                                                            "text-rose-500!",
-                                                    },
-                                                    title: "Delete",
-                                                    onClick: (file) => {
-                                                        handleDeleteFileClick?.(
-                                                            file as MetaFile,
-                                                        );
-                                                    },
-                                                },
-                                                {
-                                                    target: file,
-                                                    icon: { icon: ShareIcon },
-                                                    title: "Share",
-                                                    onClick: (file) => {
-                                                        handleShareFileClick?.(
-                                                            file as MetaFile,
-                                                        );
-                                                    },
-                                                },
-                                                {
-                                                    target: file,
-                                                    icon: { icon: PencilIcon },
-                                                    title: "Rename",
-                                                    onClick: (file) => {
-                                                        handleRenameFileClick?.(
-                                                            file as MetaFile,
-                                                        );
-                                                    },
-                                                },
-                                            ],
-                                            menuId: "fileIconView-" + file.id,
-                                            activeMenu,
-                                            setActiveMenu,
-                                        }}
+                                        dropdown={
+                                            showManageButtons
+                                                ? {
+                                                      type: "icon",
+                                                      props: {
+                                                          onClick: () => {
+                                                              setActiveFile(
+                                                                  file,
+                                                              );
+                                                          },
+                                                      },
+                                                      items: [
+                                                          {
+                                                              target: file,
+                                                              icon: {
+                                                                  icon: TrashIcon,
+                                                                  customiseIcon:
+                                                                      "text-rose-500!",
+                                                              },
+                                                              title: "Delete",
+                                                              onClick: (
+                                                                  file,
+                                                              ) => {
+                                                                  handleDeleteFileClick?.(
+                                                                      file as MetaFile,
+                                                                  );
+                                                              },
+                                                          },
+                                                          {
+                                                              target: file,
+                                                              icon: {
+                                                                  icon: ShareIcon,
+                                                              },
+                                                              title: "Share",
+                                                              onClick: (
+                                                                  file: MetaFile,
+                                                              ) => {
+                                                                  handleShareFileClick?.(
+                                                                      file as MetaFile,
+                                                                  );
+                                                              },
+                                                          },
+                                                          {
+                                                              target: file,
+                                                              icon: {
+                                                                  icon: PencilIcon,
+                                                              },
+                                                              title: "Rename",
+                                                              onClick: (
+                                                                  file: MetaFile,
+                                                              ) => {
+                                                                  handleRenameFileClick?.(
+                                                                      file as MetaFile,
+                                                                  );
+                                                              },
+                                                          },
+                                                      ],
+                                                      menuId:
+                                                          "fileIconView-" +
+                                                          file.id +
+                                                          file.fileName,
+                                                      activeMenu,
+                                                      setActiveMenu,
+                                                  }
+                                                : undefined
+                                        }
                                         isActive={activeFile?.id === file.id}
                                         onActiveChange={(file) =>
                                             setActiveFile(file)
@@ -236,53 +263,70 @@ export default function FilesList({
                                             onClick: (file) =>
                                                 handleInfoButtonClick?.(file),
                                         }}
-                                        dropdown={{
-                                            type: "icon",
-                                            useIcon: EllipsisVerticalIcon,
-                                            props: {
-                                                theme: "secondary-blur",
-                                            },
-                                            alignment: "left",
-                                            items: [
-                                                {
-                                                    target: file,
-                                                    icon: {
-                                                        icon: TrashIcon,
-                                                        customiseIcon:
-                                                            "text-rose-500!",
-                                                    },
-                                                    title: "Delete",
-                                                    onClick: (file) => {
-                                                        handleDeleteFileClick?.(
-                                                            file as MetaFile,
-                                                        );
-                                                    },
-                                                },
-                                                {
-                                                    target: file,
-                                                    icon: { icon: ShareIcon },
-                                                    title: "Share",
-                                                    onClick: (file) => {
-                                                        handleShareFileClick?.(
-                                                            file as MetaFile,
-                                                        );
-                                                    },
-                                                },
-                                                {
-                                                    target: file,
-                                                    icon: { icon: PencilIcon },
-                                                    title: "Rename",
-                                                    onClick: (file) => {
-                                                        handleRenameFileClick?.(
-                                                            file as MetaFile,
-                                                        );
-                                                    },
-                                                },
-                                            ],
-                                            menuId: "fileListView-" + file.id,
-                                            activeMenu,
-                                            setActiveMenu,
-                                        }}
+                                        dropdown={
+                                            showManageButtons
+                                                ? {
+                                                      type: "icon",
+                                                      useIcon:
+                                                          EllipsisVerticalIcon,
+                                                      props: {
+                                                          theme: "secondary-blur",
+                                                      },
+                                                      alignment: "left",
+                                                      items: [
+                                                          {
+                                                              target: file,
+                                                              icon: {
+                                                                  icon: TrashIcon,
+                                                                  customiseIcon:
+                                                                      "text-rose-500!",
+                                                              },
+                                                              title: "Delete",
+                                                              onClick: (
+                                                                  file,
+                                                              ) => {
+                                                                  handleDeleteFileClick?.(
+                                                                      file as MetaFile,
+                                                                  );
+                                                              },
+                                                          },
+                                                          {
+                                                              target: file,
+                                                              icon: {
+                                                                  icon: ShareIcon,
+                                                              },
+                                                              title: "Share",
+                                                              onClick: (
+                                                                  file,
+                                                              ) => {
+                                                                  handleShareFileClick?.(
+                                                                      file as MetaFile,
+                                                                  );
+                                                              },
+                                                          },
+                                                          {
+                                                              target: file,
+                                                              icon: {
+                                                                  icon: PencilIcon,
+                                                              },
+                                                              title: "Rename",
+                                                              onClick: (
+                                                                  file,
+                                                              ) => {
+                                                                  handleRenameFileClick?.(
+                                                                      file as MetaFile,
+                                                                  );
+                                                              },
+                                                          },
+                                                      ],
+                                                      menuId:
+                                                          "fileListView-" +
+                                                          file.id,
+                                                      activeMenu,
+                                                      setActiveMenu,
+                                                  }
+                                                : undefined
+                                        }
                                         handleDoubleClick={handleDoubleClick}
                                         trackSelectedFile={trackActiveFile}
                                     />
@@ -297,8 +341,8 @@ export default function FilesList({
                     )}
                 </DashboardSection>
             ) : (
-                <div className="capitalize text-center">
-                    <p>No Files inside this folder</p>
+                <div className="text-center capitalize rounded-md bg-cool/30 dark:bg-secondary-dark p-1">
+                    <p>No Files inside</p>
                 </div>
             )}
         </DashboardSection>

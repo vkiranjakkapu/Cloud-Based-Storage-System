@@ -36,7 +36,13 @@ export type ValidationErrors = {
 export type ApiClientProps = {
     type: "get" | "post" | "put" | "patch" | "delete";
     uri: string;
-    service: "identity" | "profile" | "storage" | "reports";
+    service:
+        | "identity"
+        | "profile"
+        | "storage"
+        | "files"
+        | "shares"
+        | "reports";
     payload?: unknown;
     config?: AxiosRequestConfig<unknown, unknown>;
     rawResponse?: boolean;
@@ -59,6 +65,10 @@ export async function apiClient<T>({
             url = AppConfig.IDENTITY_PROFILE_URL;
         } else if (service == "storage") {
             url = AppConfig.STORAGE_SERVICE_URL;
+        } else if (service == "files") {
+            url = AppConfig.FILE_URL;
+        } else if (service == "shares") {
+            url = AppConfig.SHARES_URL;
         } else {
             url = AppConfig.REPORTS_SERVICE_URL;
         }

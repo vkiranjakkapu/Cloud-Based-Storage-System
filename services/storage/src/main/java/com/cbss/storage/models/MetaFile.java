@@ -8,6 +8,8 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -51,9 +53,11 @@ public class MetaFile {
 
     private UUID ownerId;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "file", cascade = CascadeType.ALL)
     private Set<FileAccess> accesses;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "file")
     @Builder.Default
     private Set<SharedFile> shares = new HashSet<>();

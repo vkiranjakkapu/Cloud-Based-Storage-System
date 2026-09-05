@@ -66,7 +66,6 @@ export type DirectoryResponse = {
     parentFolders: Folder[];
     subFolders: Folder[];
     files: MetaFile[];
-    sharedFiles: MetaFile[];
 };
 
 export type UpdateFolderRequest = {

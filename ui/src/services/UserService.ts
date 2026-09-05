@@ -2,6 +2,15 @@ import { apiClient, type ApiResponse, type ErrorResponse } from "../api/api";
 import type { RoleType } from "../context/usePrincipal";
 
 class UserService {
+    async getUsersByEmail<T>(
+        email: string,
+    ): Promise<ApiResponse<T> | ErrorResponse> {
+        return apiClient({
+            type: "get",
+            service: "profile",
+            uri: "/search/" + email,
+        });
+    }
     async register<T>(
         payload: unknown,
     ): Promise<ApiResponse<T> | ErrorResponse> {

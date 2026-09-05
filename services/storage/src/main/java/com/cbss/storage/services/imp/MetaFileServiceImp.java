@@ -5,11 +5,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +20,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cbss.storage.dto.FileUpdateRequestDto;
+import com.cbss.storage.dto.LatestFileDto;
 import com.cbss.storage.dto.UploadRequest;
 import com.cbss.storage.enums.SecurityExceptions;
 import com.cbss.storage.enums.StorageExceptions;
@@ -27,26 +31,20 @@ import com.cbss.storage.repositories.MetaFileRepository;
 import com.cbss.storage.services.CurrentUserService;
 import com.cbss.storage.services.FolderService;
 import com.cbss.storage.services.MetaFileService;
+import com.cbss.storage.services.ShareService;
 import com.cbss.storage.services.StorageService;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class MetaFileServiceImp implements MetaFileService {
 
-    private MetaFileRepository fileRepository;
-    private CurrentUserService currentUser;
-    private FolderService folderService;
-    private StorageService storageService;
-
-    public MetaFileServiceImp(
-            MetaFileRepository fileRepository,
-            CurrentUserService currentUser,
-            FolderService folderService,
-            StorageService storageService) {
-        this.fileRepository = fileRepository;
-        this.currentUser = currentUser;
-        this.folderService = folderService;
-        this.storageService = storageService;
-    }
+    private final MetaFileRepository fileRepository;
+    private final CurrentUserService currentUser;
+    private final FolderService folderService;
+    private final StorageService storageService;
+    private final ShareService shareService;
 
     @Override
     public MetaFile getFileById(UUID fileId) {
@@ -57,6 +55,36 @@ public class MetaFileServiceImp implements MetaFileService {
             throw new BusinessException(StorageExceptions.DELETED_RESOURCE_ACCESS);
 
         return file;
+    }
+
+    @Override
+    public List<LatestFileDto> getLatestFiles() {
+
+        List<LatestFileDto> shared = shareService.getSharedFiles()
+                .stream()
+                .map(share -> LatestFileDto.builder()
+                        .file(share.file())
+                        .shared(true)
+                        .owner(share.owner())
+                        .createdAt(share.createdAt())
+                        .build())
+                .toList();
+
+        List<LatestFileDto> recentUploads = fileRepository
+                .findAllByOwnerIdAndIsLatestTrueAndIsDeletedFalse(currentUser.userId())
+                .stream()
+                .map(file -> LatestFileDto.builder()
+                        .file(file)
+                        .createdAt(file.getCreatedAt())
+                        .shared(false)
+                        .build())
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        return Stream.concat(
+                recentUploads.stream(),
+                shared.stream())
+                .sorted(Comparator.comparing(LatestFileDto::getCreatedAt).reversed())
+                .toList();
     }
 
     @Override

@@ -114,6 +114,13 @@ public class UserController {
                 .ok(APIResponseDto.builder().data(userService.getAllUsersWithIds(request.ids())).build());
     }
 
+    @Operation(summary = "Get users by email")
+    @GetMapping("/search/{email}")
+    public ResponseEntity<APIResponseDto> getAllByEmail(@PathVariable String email) {
+        return ResponseEntity
+                .ok(APIResponseDto.builder().data(userService.getAllUsersByEmail(email)).build());
+    }
+
     @Operation(summary = "Update user")
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")

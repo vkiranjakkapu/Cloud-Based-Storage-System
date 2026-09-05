@@ -1,8 +1,10 @@
 package com.cbss.storage.models;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.cbss.storage.enums.ShareType;
 
@@ -40,12 +42,15 @@ public class SharedFile {
     @Builder.Default
     private ShareType type = ShareType.PRIVATE;
 
-    private UUID userId;
+    /** Target User ID */
+    private UUID targetUserId;
 
     private LocalDateTime expiry;
 
-    private Instant updatedAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
-    private Instant createdAt;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
 }

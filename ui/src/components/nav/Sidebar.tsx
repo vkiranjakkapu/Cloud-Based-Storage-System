@@ -16,6 +16,7 @@ import type { IconProps } from "../Commons";
 import IconComponent from "../IconComponent";
 import FavIcon from "/favicon.png";
 import Avatar from "/undraw_fitness-influencer-avatar_04j0.svg";
+import { ShareIcon } from "@heroicons/react/24/outline";
 
 interface NavItem {
     label: string;
@@ -55,6 +56,12 @@ export default function Sidebar({
             label: "Files",
             route: RoutePaths.DIRECTORY,
             icon: FolderIcon,
+            roles: ["ADMIN", "USER"],
+        },
+        {
+            label: "Shared",
+            route: RoutePaths.SHARED,
+            icon: ShareIcon,
             roles: ["ADMIN", "USER"],
         },
         {

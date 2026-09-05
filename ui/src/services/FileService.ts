@@ -1,15 +1,30 @@
 import { apiClient, type ApiResponse, type ErrorResponse } from "../api/api";
+import type { UserProfile } from "../context/usePrincipal";
 import type { Folder } from "./DirectoryService";
 import type { Group } from "./GroupsService";
 
 class FileService {
+    async getSharedFiles<T>(): Promise<ApiResponse<T> | ErrorResponse> {
+        return apiClient({
+            type: "get",
+            service: "shares",
+            uri: "/",
+        });
+    }
+    async getLatestFiles<T>(): Promise<ApiResponse<T> | ErrorResponse> {
+        return apiClient({
+            type: "get",
+            service: "files",
+            uri: "/latest",
+        });
+    }
     async getFileContent<T>(
         fileId?: string,
     ): Promise<ApiResponse<T> | ErrorResponse> {
         return apiClient({
             type: "get",
-            service: "storage",
-            uri: "/files/" + fileId + "/content",
+            service: "files",
+            uri: "/" + fileId + "/content",
             rawResponse: true,
             config: {
                 responseType: "blob",
@@ -22,8 +37,8 @@ class FileService {
     ): Promise<ApiResponse<T> | ErrorResponse> {
         return apiClient({
             type: "get",
-            service: "storage",
-            uri: "/files/" + fileId,
+            service: "files",
+            uri: "/" + fileId,
         });
     }
 
@@ -32,8 +47,8 @@ class FileService {
     ): Promise<ApiResponse<T> | ErrorResponse> {
         return apiClient({
             type: "get",
-            service: "storage",
-            uri: "/files/versions/" + fileId,
+            service: "files",
+            uri: "/versions/" + fileId,
         });
     }
 
@@ -42,8 +57,8 @@ class FileService {
     ): Promise<ApiResponse<T> | ErrorResponse> {
         return apiClient({
             type: "post",
-            service: "storage",
-            uri: "/files/",
+            service: "files",
+            uri: "/",
             payload,
         });
     }
@@ -53,13 +68,20 @@ class FileService {
     ): Promise<ApiResponse<T> | ErrorResponse> {
         return apiClient({
             type: "delete",
-            service: "storage",
-            uri: "/files/" + fileId,
+            service: "files",
+            uri: "/" + fileId,
         });
     }
 }
 
 export default new FileService();
+
+export type LatestFiles = {
+    file: MetaFile;
+    createdAt: string;
+    owner: UserProfile;
+    shared: boolean;
+};
 
 export type MetaFile = {
     id: string;
@@ -69,6 +91,7 @@ export type MetaFile = {
     folder: Folder;
     mimeType: string;
     ownerId: string;
+    owner?: UserProfile;
     accesses: FileAccess[];
     shares: SharedFile[];
     isLatest: boolean;

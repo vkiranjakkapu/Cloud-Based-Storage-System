@@ -2,18 +2,20 @@ import {
     ArrowRightCircleIcon,
     ArrowRightIcon,
     ArrowUpTrayIcon,
+    CalendarDaysIcon,
     CheckCircleIcon,
-    DocumentDuplicateIcon,
     DocumentTextIcon,
     EllipsisHorizontalIcon,
     FolderOpenIcon,
     FolderPlusIcon,
     InformationCircleIcon,
+    MagnifyingGlassIcon,
     PencilIcon,
     PlusCircleIcon,
     ShareIcon,
     TrashIcon,
     UserIcon,
+    UserMinusIcon,
     UserPlusIcon,
     ViewColumnsIcon,
     XMarkIcon,
@@ -29,6 +31,7 @@ import {
 } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ActionButton from "../../components/ActionButtonComponent";
+import FileListComponent from "../../components/directories/FileListComponent";
 import { FolderComponent } from "../../components/directories/FolderComponent";
 import type { FloatingMenuComponentProps } from "../../components/floatingMenu/FloatingMenuComponent";
 import InputComponent from "../../components/form/InputComponent";
@@ -38,6 +41,7 @@ import DashboardSection from "../../components/layouts/DashboardSection";
 import IconHeaderLayout from "../../components/layouts/IconHeaderLayout";
 import ModalComponent from "../../components/ModalComponent";
 import DividerComponent from "../../components/nav/DividerComponent";
+import FocusMenu from "../../components/nav/FocusMenu";
 import Notification, {
     type NotificationProps,
 } from "../../components/Notification";
@@ -46,6 +50,7 @@ import {
     UploadComponent,
     type UploadComponentProps,
 } from "../../components/UploadComponent";
+import type { UserProfile } from "../../context/usePrincipal";
 import { RoutePaths } from "../../routes/RoutePaths";
 import DirectoryService, {
     UpdateType,
@@ -54,22 +59,28 @@ import DirectoryService, {
     type TreeResponseDto,
     type UpdateFolderRequest,
 } from "../../services/DirectoryService";
-import type { MetaFile } from "../../services/FileService";
+import type {
+    LatestFiles,
+    MetaFile,
+    SharedFile,
+} from "../../services/FileService";
 import FileService from "../../services/FileService";
+import ShareService, { type AccessRecord } from "../../services/ShareService";
 import UploadService, {
     type UploadRequest,
 } from "../../services/UploadService";
+import UserService from "../../services/UserService";
 import { DateFormatter } from "../../utils/DateFormatter";
 import { formatBytes } from "../../utils/FileUploadHelper";
 import FilesList from "./FilesList";
-import FocusMenu from "../../components/nav/FocusMenu";
-import FileListComponent from "../../components/directories/FileListComponent";
+import usePrincipal from "../../context/usePrincipal";
 
 type AllNotifications = {
     add: NotificationProps;
     rename: NotificationProps;
     move: NotificationProps;
     share: NotificationProps;
+    emailSearch: NotificationProps;
 };
 
 export default function DirectoryPage() {
@@ -80,9 +91,20 @@ export default function DirectoryPage() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState<boolean>(true);
 
+    const { profile } = usePrincipal();
+
     // ? Directory Fetching
     const [directory, setDirectory] = useState<DirectoryResponse | null>(null);
     const [folderTree, setFolderTree] = useState<TreeResponseDto | null>(null);
+
+    const [latestFiles, setLatestFiles] = useState<LatestFiles[]>([]);
+    const refreshLatestFiles = useCallback(() => {
+        FileService.getLatestFiles<LatestFiles[]>().then((resp) => {
+            if (resp && !("errorMessage" in resp)) {
+                setLatestFiles(resp.data);
+            }
+        });
+    }, []);
 
     const refreshDirectory = useCallback(() => {
         DirectoryService.getDirectoryContents<DirectoryResponse>(directoryId)
@@ -116,13 +138,14 @@ export default function DirectoryPage() {
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
     // ? Modal
-    const [folderModal, setFolderModal] = useState<
-        "add" | "edit" | "share" | null
-    >(null);
+    const [folderModal, setFolderModal] = useState<"add" | "edit" | null>(null);
     const [fileModal, setFileModal] = useState<"add" | "edit" | "share" | null>(
         null,
     );
-    const [shareItem, setShareItem] = useState<MetaFile | Folder | null>(null);
+    const [shareItem, setShareItem] = useState<{
+        file?: MetaFile;
+        folder?: Folder;
+    } | null>(null);
 
     // ? Notifications
     const [notifications, updateNotifications] =
@@ -260,9 +283,12 @@ export default function DirectoryPage() {
                     ")?",
             )
         ) {
-            DirectoryService.deleteFolder<boolean>(activeFolder?.id + "").then(
+            DirectoryService.deleteFolder<boolean>(folder?.id + "").then(
                 (resp) => {
                     if (resp && !("errorMessage" in resp)) {
+                        window.alert(
+                            `'${folder.name}' has been deleted successfully.`,
+                        );
                         refreshDirectory();
                         refreshRootTree();
                     } else {
@@ -296,11 +322,50 @@ export default function DirectoryPage() {
             }
         });
     }, []);
+    useEffect(() => {
+        refreshLatestFiles();
+    }, [refreshLatestFiles]);
 
     const [fileVersions, setFileVersions] = useState<MetaFile[] | null>(null);
-    const handleFileInfoClick = (file: MetaFile) => {
+    const [sharedRecords, setSharedRecords] = useState<AccessRecord[] | null>(
+        null,
+    );
+
+    const fetchSharedUsers = useCallback(
+        (file: MetaFile) => {
+            ShareService.getSharedWithUsers<AccessRecord[]>(file.id).then(
+                (resp) => {
+                    if (resp && !("errorMessage" in resp)) {
+                        setSharedRecords(
+                            resp.data
+                                .filter((rec) => rec.user.id != profile?.id)
+                                .map((rec) => {
+                                    return {
+                                        ...rec,
+                                        user: {
+                                            ...rec.user,
+                                            name: `${rec.user.firstName} ${rec.user.lastName}`,
+                                        },
+                                    };
+                                }),
+                        );
+                    }
+                },
+            );
+        },
+        [profile?.id],
+    );
+
+    const handleFileInfoClick = (file: MetaFile, isSharedFile?: boolean) => {
+        if (isSharedFile) {
+            const sharedFile = latestFiles
+                .filter((item) => item.file.id === file.id)
+                .at(0);
+            file.owner = sharedFile?.owner;
+        }
         setActiveFile(file);
         fetchFileVersions(file);
+        fetchSharedUsers(file);
     };
 
     const renameFile = (id: string, name: string) => {
@@ -371,9 +436,118 @@ export default function DirectoryPage() {
     };
 
     const handleShareFileClick = (file: MetaFile) => {
-        console.log("Share file-" + file.id);
-        setShareItem(file);
+        setShareItem({ file });
+        setFileModal("share");
     };
+    const [searchEmail, setSearchEmail] = useState("");
+    const [searchInProgress, setSearchInProgress] = useState(false);
+    const [emailResults, setEmailResults] = useState<UserProfile[]>([]);
+
+    const [selectedUsers, setSelectedUsers] = useState<UserProfile[]>([]);
+
+    const fetchUsersByEmail = useCallback(() => {
+        if (!searchEmail.trim()) {
+            setEmailResults([]);
+            return;
+        }
+
+        setSearchInProgress(true);
+
+        UserService.getUsersByEmail<UserProfile[]>(searchEmail.trim())
+            .then((resp) => {
+                if (resp && !("errorMessage" in resp)) {
+                    setEmailResults(resp.data);
+                } else {
+                    setEmailResults([]);
+
+                    setNotifications("emailSearch", {
+                        type: "error",
+                        messages:
+                            resp.validationErrors?.length > 0
+                                ? resp.validationErrors.map(
+                                      (ve) => ve.field + " " + ve.message,
+                                  )
+                                : [resp.errorMessage],
+                    });
+                }
+            })
+            .finally(() => {
+                setSearchInProgress(false);
+            });
+    }, [searchEmail]);
+
+    function addSelectedUser(user: UserProfile) {
+        setSelectedUsers((prev) => {
+            if (prev.some((selected) => selected.id === user.id)) {
+                return prev;
+            }
+
+            return [...prev, user];
+        });
+    }
+
+    function removeSelectedUser(userId: string) {
+        setSelectedUsers((prev) => prev.filter((user) => user.id !== userId));
+    }
+
+    function shareFile() {
+        const expiry = (
+            document.getElementById("FileShareExpiryDate") as HTMLInputElement
+        ).value;
+
+        if (expiry == "") {
+            setNotifications("share", {
+                type: "info",
+                messages: ["Please select the expiry time as well."],
+            });
+            return;
+        }
+
+        const payload = {
+            fileId: shareItem?.file?.id,
+            users: selectedUsers.map((user) => ({
+                userId: user.id,
+                email: user.email,
+            })),
+            expiry,
+        };
+
+        ShareService.shareFileWithUserIds<{
+            shares: SharedFile[];
+            info: string[];
+        }>(payload).then((resp) => {
+            if (resp && !("errorMessage" in resp)) {
+                if (resp.data.info.length !== 0) {
+                    setNotifications("share", {
+                        type: "success",
+                        messages: resp.data.info,
+                    });
+                    setEmailResults([]);
+                    setSelectedUsers([]);
+                } else
+                    setNotifications("share", {
+                        type: "success",
+                        messages: [`File has been shared successfully.`],
+                    });
+            } else {
+                setNotifications("share", {
+                    type: "error",
+                    messages: [resp.errorMessage],
+                });
+            }
+        });
+    }
+
+    function removeFileAccess(access: AccessRecord) {
+        if (window.confirm("Rmove File Access for " + access.user.name + "?")) {
+            ShareService.removeAccess(access.share.id).then((resp) => {
+                if (resp && !("errorMessage" in resp)) {
+                    window.alert("File Access Removed for " + access.user.name);
+                }
+                fetchSharedUsers(activeFile!);
+            });
+        }
+    }
 
     const deleteFile = (file: MetaFile) => {
         setActiveFile(file);
@@ -445,7 +619,10 @@ export default function DirectoryPage() {
                                 : upItem,
                         ),
                     );
-                    if (!isError) refreshDirectory();
+                    if (!isError) {
+                        refreshDirectory();
+                        refreshLatestFiles();
+                    }
                 })
                 .catch((err) => {
                     if (err?.name === "CanceledError" || axios.isCancel(err))
@@ -494,7 +671,13 @@ export default function DirectoryPage() {
                     </div>
                     <div className="absolute inset-0 flex justify-end text-end">
                         <div className="ml-auto p-2">
-                            <IconComponent icon={ShareIcon} />
+                            <IconComponent
+                                icon={ShareIcon}
+                                onClick={() => {
+                                    setShareItem({ file: activeFile! });
+                                    setFileModal("share");
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
@@ -515,6 +698,9 @@ export default function DirectoryPage() {
                                 activeFile?.createdAt,
                             )}
                         </p>
+                        {activeFile?.owner && (
+                            <p>{`Owner: ${activeFile?.owner?.firstName} ${activeFile?.owner?.lastName}`}</p>
+                        )}
                     </div>
                 </div>
                 {fileVersions && fileVersions.length > 1 && (
@@ -547,10 +733,43 @@ export default function DirectoryPage() {
                         </div>
                     </div>
                 )}
-                <div className="">
-                    <DividerComponent text="Shared with" />
-                    <SharedUserComponent />
-                </div>
+                {sharedRecords && sharedRecords.length > 0 && (
+                    <>
+                        <DividerComponent text="Shared With" />
+                        {sharedRecords.map((record) => {
+                            return (
+                                <div className="" key={record.share.id}>
+                                    <SharedUserComponent
+                                        user={record.user}
+                                        share={record.share}
+                                        dropDown={{
+                                            type: "icon",
+                                            items: [
+                                                {
+                                                    icon: {
+                                                        icon: UserMinusIcon,
+                                                    },
+                                                    onClick() {
+                                                        removeFileAccess(
+                                                            record,
+                                                        );
+                                                    },
+                                                },
+                                            ],
+                                            alignment: "left",
+                                        }}
+                                    />
+                                </div>
+                            );
+                        })}
+                    </>
+                )}
+                {activeFile?.owner && (
+                    <div className="">
+                        <DividerComponent text="Shared With you By" />
+                        <SharedUserComponent user={activeFile.owner} />
+                    </div>
+                )}
             </div>
         );
     }
@@ -661,16 +880,12 @@ export default function DirectoryPage() {
                             title={
                                 folderModal == "add"
                                     ? "Add Folder"
-                                    : folderModal == "share"
-                                      ? `Share '${activeFolder?.name}' folder`
-                                      : `Edit '${activeFolder?.name}' folder`
+                                    : `Edit '${activeFolder?.name}' folder`
                             }
                             icon={
                                 folderModal == "add"
                                     ? FolderPlusIcon
-                                    : folderModal == "share"
-                                      ? ShareIcon
-                                      : undefined
+                                    : undefined
                             }
                             isOpen={folderModal != null}
                             onClose={() => {
@@ -866,62 +1081,6 @@ export default function DirectoryPage() {
                                         )}
                                     </>
                                 )}
-                                {folderModal === "share" && (
-                                    <div>
-                                        <DividerComponent
-                                            text="Share Folder"
-                                            icon={ShareIcon}
-                                            inline
-                                        />
-                                        <InputComponent
-                                            id="userEmail"
-                                            label={{ icon: UserIcon }}
-                                            placeholder="User Email"
-                                            type="email"
-                                        >
-                                            <ActionButton
-                                                text="Add"
-                                                icon={UserPlusIcon}
-                                                theme="primary-blur"
-                                                customise="rounded-none!"
-                                                customiseLayer="rounded-none!"
-                                            />
-                                            <ActionButton
-                                                text="Share"
-                                                icon={ShareIcon}
-                                                theme="primary"
-                                                customise="rounded-none!"
-                                                customiseLayer="rounded-none!"
-                                            />
-                                        </InputComponent>
-                                        <div className="flex flex-wrap gap-2 *:cursor-pointer *:p-1 *:px-2 *:rounded-md *:shadow-sm *:border *:border-slate-200 *:dark:border-cool/15">
-                                            <div className="inline-flex gap-2 items-center">
-                                                <p>
-                                                    venkatakirna.jakkapu@gmail.com
-                                                </p>
-                                                <ActionButton
-                                                    icon={XMarkIcon}
-                                                    theme="primary-blur"
-                                                    customise="p-0.5! rounded-md!"
-                                                    customiseLayer="rounded-md"
-                                                />
-                                            </div>
-                                        </div>
-                                        {notifications &&
-                                            notifications.share && (
-                                                <Notification
-                                                    type={
-                                                        notifications.share.type
-                                                    }
-                                                    messages={
-                                                        notifications.share
-                                                            .messages
-                                                    }
-                                                    customise="p-1! px-2!"
-                                                />
-                                            )}
-                                    </div>
-                                )}
                             </div>
                         </ModalComponent>
 
@@ -932,7 +1091,6 @@ export default function DirectoryPage() {
                                     ? "Share File"
                                     : "Edit File"
                             }
-                            icon={fileModal == "share" ? ShareIcon : undefined}
                             isOpen={fileModal != null}
                             onClose={() => {
                                 setFileModal(null);
@@ -1065,58 +1223,256 @@ export default function DirectoryPage() {
                                 )}
                                 {fileModal === "share" && (
                                     <div>
+                                        {/* File Information */}
+                                        <div className="flex flex-wrap justify-between gap-2 p-2 rounded-md border border-slate-200 dark:border-cool/15 bg-slate-50 dark:bg-secondary shadow-sm">
+                                            <DividerComponent
+                                                text="File Info"
+                                                inline
+                                            />
+
+                                            <div className="space-y-2 flex-1">
+                                                <p className="text-primary">
+                                                    <strong>
+                                                        {
+                                                            shareItem?.file
+                                                                ?.fileName
+                                                        }
+                                                    </strong>
+                                                </p>
+
+                                                <p className="text-sm">
+                                                    Type:{" "}
+                                                    {shareItem?.file?.mimeType}
+                                                </p>
+
+                                                <p className="text-sm">
+                                                    Size:{" "}
+                                                    {formatBytes(
+                                                        shareItem?.file
+                                                            ?.fileSize ?? 0,
+                                                    )}
+                                                </p>
+
+                                                <p className="text-sm">
+                                                    Uploaded:{" "}
+                                                    {DateFormatter.toFormattedDate(
+                                                        shareItem?.file
+                                                            ?.createdAt,
+                                                    )}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {notifications?.share && (
+                                            <Notification
+                                                type={notifications.share.type}
+                                                messages={
+                                                    notifications.share.messages
+                                                }
+                                            />
+                                        )}
+
+                                        {/* Search Users */}
                                         <DividerComponent
-                                            text="Share Folder"
-                                            icon={ShareIcon}
+                                            text="Share File With"
                                             inline
                                         />
+
                                         <InputComponent
                                             id="userEmail"
                                             label={{ icon: UserIcon }}
                                             placeholder="User Email"
                                             type="email"
+                                            value={searchEmail}
+                                            onChange={(e) => {
+                                                setSearchEmail(e.target.value);
+                                            }}
                                         >
                                             <ActionButton
-                                                text="Add"
-                                                icon={UserPlusIcon}
+                                                text={
+                                                    searchInProgress
+                                                        ? "Searching..."
+                                                        : "Search"
+                                                }
+                                                icon={MagnifyingGlassIcon}
                                                 theme="primary-blur"
                                                 customise="rounded-none!"
                                                 customiseLayer="rounded-none!"
-                                            />
-                                            <ActionButton
-                                                text="Share"
-                                                icon={ShareIcon}
-                                                theme="primary"
-                                                customise="rounded-none!"
-                                                customiseLayer="rounded-none!"
+                                                disabled={
+                                                    searchInProgress ||
+                                                    !searchEmail.trim()
+                                                }
+                                                onClick={fetchUsersByEmail}
                                             />
                                         </InputComponent>
-                                        <div className="flex flex-wrap gap-2 *:cursor-pointer *:p-1 *:px-2 *:rounded-md *:shadow-sm *:border *:border-slate-200 *:dark:border-cool/15">
-                                            <div className="inline-flex gap-2 items-center">
-                                                <p>
-                                                    venkatakirna.jakkapu@gmail.com
+
+                                        {/* Search Results */}
+                                        {emailResults.length > 0 ? (
+                                            <>
+                                                <div className="space-y-1">
+                                                    {emailResults.map(
+                                                        (user) => {
+                                                            const isSelected =
+                                                                selectedUsers.some(
+                                                                    (
+                                                                        selected,
+                                                                    ) =>
+                                                                        selected.id ===
+                                                                        user.id,
+                                                                );
+
+                                                            return (
+                                                                <div
+                                                                    key={
+                                                                        user.id
+                                                                    }
+                                                                    className={`
+                                                                        flex items-center justify-between
+                                                                        gap-2 p-1 rounded-md
+                                                                        border border-slate-200
+                                                                        dark:border-cool/15
+                                                                        bg-slate-50
+                                                                        dark:bg-secondary
+                                                                        ${isSelected ? "opacity-60" : ""}
+                                                                    `}
+                                                                >
+                                                                    <div className="min-w-0">
+                                                                        <p className="font-medium truncate">
+                                                                            {
+                                                                                user.name
+                                                                            }
+                                                                        </p>
+
+                                                                        <p className="text-sm truncate">
+                                                                            {
+                                                                                user.email
+                                                                            }
+                                                                        </p>
+                                                                    </div>
+
+                                                                    <ActionButton
+                                                                        text={
+                                                                            isSelected
+                                                                                ? "Added"
+                                                                                : "Add"
+                                                                        }
+                                                                        icon={
+                                                                            isSelected
+                                                                                ? CheckCircleIcon
+                                                                                : UserPlusIcon
+                                                                        }
+                                                                        theme={
+                                                                            isSelected
+                                                                                ? "secondary"
+                                                                                : "primary-blur"
+                                                                        }
+                                                                        customise="shrink-0 py-1!"
+                                                                        disabled={
+                                                                            isSelected
+                                                                        }
+                                                                        onClick={() =>
+                                                                            addSelectedUser(
+                                                                                user,
+                                                                            )
+                                                                        }
+                                                                    />
+                                                                </div>
+                                                            );
+                                                        },
+                                                    )}
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="text-center p-2 rounded-md bg-cool/20 dark:bg-secondary">
+                                                <p className="text-sm">
+                                                    No user found with matching
+                                                    email
                                                 </p>
-                                                <ActionButton
-                                                    icon={XMarkIcon}
-                                                    theme="primary-blur"
-                                                    customise="p-0.5! rounded-md!"
-                                                    customiseLayer="rounded-md"
-                                                />
                                             </div>
-                                        </div>
-                                        {notifications &&
-                                            notifications.share && (
-                                                <Notification
-                                                    type={
-                                                        notifications.share.type
-                                                    }
-                                                    messages={
-                                                        notifications.share
-                                                            .messages
-                                                    }
-                                                    customise="p-1! px-2!"
-                                                />
-                                            )}
+                                        )}
+
+                                        {/* Search notification */}
+                                        {notifications?.emailSearch && (
+                                            <Notification
+                                                type={
+                                                    notifications.emailSearch
+                                                        .type
+                                                }
+                                                messages={
+                                                    notifications.emailSearch
+                                                        .messages
+                                                }
+                                                customise="p-1! px-2!"
+                                            />
+                                        )}
+
+                                        {/* Selected Users */}
+                                        <DividerComponent text="Selected Users" />
+
+                                        {selectedUsers.length === 0 ? (
+                                            <div className="text-center p-2 rounded-md bg-cool/20 dark:bg-secondary">
+                                                <p className="text-sm">
+                                                    No users selected
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-wrap gap-2">
+                                                {selectedUsers.map((user) => (
+                                                    <div
+                                                        key={user.id}
+                                                        className="
+                                                            inline-flex items-center gap-2
+                                                            p-1 px-2 rounded-md shadow-sm
+                                                            border border-slate-200
+                                                            dark:border-cool/15
+                                                            "
+                                                    >
+                                                        <span>
+                                                            {user.email}
+                                                        </span>
+
+                                                        <ActionButton
+                                                            icon={XMarkIcon}
+                                                            theme="primary-blur"
+                                                            customise="p-0.5! rounded-md!"
+                                                            customiseLayer="rounded-md"
+                                                            onClick={() =>
+                                                                removeSelectedUser(
+                                                                    user.id,
+                                                                )
+                                                            }
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* ExpiryDate */}
+                                        <DividerComponent text="Share Expires by" />
+                                        <InputComponent
+                                            id="FileShareExpiryDate"
+                                            label={{ icon: CalendarDaysIcon }}
+                                            type="datetime-local"
+                                            min={new Date(
+                                                new Date().getTime() -
+                                                    new Date().getTimezoneOffset() *
+                                                        60000,
+                                            )
+                                                .toISOString()
+                                                .slice(0, 16)}
+                                            required
+                                        />
+
+                                        <ActionButton
+                                            text="Share"
+                                            icon={ShareIcon}
+                                            theme="primary"
+                                            customise="mt-2"
+                                            disabled={
+                                                selectedUsers.length === 0
+                                            }
+                                            onClick={shareFile}
+                                        />
                                     </div>
                                 )}
                             </div>
@@ -1133,18 +1489,6 @@ export default function DirectoryPage() {
                                     ? "Loading..."
                                     : `${directory?.subFolders.length} folders and ${directory?.files.length} files in category`
                             }
-                            actionButtons={[
-                                {
-                                    icon: ShareIcon,
-                                    theme: "primary",
-                                    onClick() {
-                                        setActiveFolder(
-                                            directory?.current ?? null,
-                                        );
-                                        setFolderModal("share");
-                                    },
-                                },
-                            ]}
                         >
                             {/* Folders Section */}
                             <DashboardSection
@@ -1282,19 +1626,6 @@ export default function DirectoryPage() {
                                                                 "edit",
                                                             );
                                                         }}
-                                                        handleShareClick={(
-                                                            folder,
-                                                        ) => {
-                                                            setActiveFolder(
-                                                                folder,
-                                                            );
-                                                            updateNotifications(
-                                                                null,
-                                                            );
-                                                            setFolderModal(
-                                                                "share",
-                                                            );
-                                                        }}
                                                         handleDeleteClick={
                                                             deleteFolder
                                                         }
@@ -1337,6 +1668,7 @@ export default function DirectoryPage() {
                                 handleShareFileClick={handleShareFileClick}
                                 handleDeleteFileClick={deleteFile}
                                 trackActiveFile={setActiveFile}
+                                showUpload={true}
                             />
                         </IconHeaderLayout>
                         <input
@@ -1383,132 +1715,89 @@ export default function DirectoryPage() {
                                 </div>
                             )}
                         </div>
-                        {(directory?.sharedFiles ?? []).length > 0 && (
+                        {/* Files */}
+                        {latestFiles.length > 0 && (
                             <div className="container flex-1">
                                 <DividerComponent
-                                    text="Shared Files"
-                                    icon={DocumentDuplicateIcon}
+                                    text="Latest Files"
+                                    icon={DocumentTextIcon}
                                 />
-                                {/* Shared Files */}
+                                {/* Latest Files */}
                                 <div className="space-y-1">
-                                    {(
-                                        directory?.sharedFiles?.slice(0, 5) ??
-                                        []
-                                    ).map((file, idx) => (
-                                        <FileListComponent
-                                            key={idx}
-                                            file={file}
-                                            useIcon={DocumentTextIcon}
-                                            showFileSize={false}
-                                            showOwner={false}
-                                            handleDoubleClick={handleOpenFile}
-                                            infoButton={{
-                                                onClick(file) {
-                                                    handleFileInfoClick(file);
-                                                },
-                                            }}
-                                            trackSelectedFile={(file) => {
-                                                setActiveFile(file);
-                                            }}
-                                        />
-                                    ))}
+                                    {latestFiles
+                                        .slice(0, 6)
+                                        .map((item, idx) => (
+                                            <FileListComponent
+                                                key={idx}
+                                                file={item.file}
+                                                useIcon={DocumentTextIcon}
+                                                showFileSize={false}
+                                                showOwner={false}
+                                                dropdown={{
+                                                    type: "icon",
+                                                    useIcon:
+                                                        EllipsisHorizontalIcon,
+                                                    props: {
+                                                        theme: "secondary-blur",
+                                                        // menutheme: "secondary-blur",
+                                                    },
+                                                    alignment: "bottom",
+                                                    items: [
+                                                        {
+                                                            target: item.file,
+                                                            icon: {
+                                                                icon: InformationCircleIcon,
+                                                            },
+                                                            text: "Info",
+                                                            onClick(item) {
+                                                                handleFileInfoClick(
+                                                                    item as MetaFile,
+                                                                    true,
+                                                                );
+                                                            },
+                                                        },
+                                                        ...(!item.shared
+                                                            ? [
+                                                                  {
+                                                                      icon: {
+                                                                          icon: PencilIcon,
+                                                                      },
+                                                                      text: "Edit",
+                                                                      onClick() {
+                                                                          setActiveFile(
+                                                                              item.file,
+                                                                          );
+                                                                          setFileModal(
+                                                                              "edit",
+                                                                          );
+                                                                      },
+                                                                  },
+                                                                  {
+                                                                      icon: {
+                                                                          icon: ShareIcon,
+                                                                      },
+                                                                      text: "Share",
+                                                                      onClick() {
+                                                                          handleShareFileClick(
+                                                                              item.file,
+                                                                          );
+                                                                      },
+                                                                  },
+                                                              ]
+                                                            : []),
+                                                    ],
+                                                    menuId: `latestFile-${item.file.id}`,
+                                                    activeMenu,
+                                                    setActiveMenu,
+                                                }}
+                                                handleDoubleClick={
+                                                    handleOpenFile
+                                                }
+                                            />
+                                        ))}
                                 </div>
                             </div>
                         )}
-                        {/* Files */}
-                        <div className="container flex-1">
-                            <DividerComponent
-                                text="Latest Files"
-                                icon={DocumentTextIcon}
-                            />
-                            {/* Latest Files */}
-                            <div className="space-y-1">
-                                {(directory?.files?.slice(0, 5) ?? []).map(
-                                    (file, idx) => (
-                                        <FileListComponent
-                                            key={idx}
-                                            file={file}
-                                            useIcon={DocumentTextIcon}
-                                            showFileSize={false}
-                                            showOwner={false}
-                                            dropdown={{
-                                                type: "icon",
-                                                useIcon: EllipsisHorizontalIcon,
-                                                props: {
-                                                    theme: "secondary-blur",
-                                                    // menutheme: "secondary-blur",
-                                                },
-                                                alignment: "bottom",
-                                                items: [
-                                                    {
-                                                        target: file,
-                                                        icon: {
-                                                            icon: InformationCircleIcon,
-                                                        },
-                                                        text: "Info",
-                                                        onClick(item) {
-                                                            handleFileInfoClick(
-                                                                item as MetaFile,
-                                                            );
-                                                        },
-                                                    },
-                                                    {
-                                                        target: file,
-                                                        icon: {
-                                                            icon: PencilIcon,
-                                                        },
-                                                        text: "Rename",
-                                                        onClick({
-                                                            item,
-                                                        }: {
-                                                            item: MetaFile;
-                                                        }) {
-                                                            renameFile(
-                                                                item.id,
-                                                                item.fileName,
-                                                            );
-                                                        },
-                                                    },
-                                                    {
-                                                        target: file,
-                                                        icon: {
-                                                            icon: ShareIcon,
-                                                        },
-                                                        text: "Share",
-                                                        onClick(item) {
-                                                            handleShareFileClick(
-                                                                item as MetaFile,
-                                                            );
-                                                        },
-                                                    },
-                                                    {
-                                                        target: file,
-                                                        icon: {
-                                                            icon: TrashIcon,
-                                                            customiseIcon:
-                                                                "group-hover:text-rose-500!",
-                                                        },
-                                                        text: "Delete",
-                                                        onClick(item) {
-                                                            deleteFile(
-                                                                item as MetaFile,
-                                                            );
-                                                        },
-                                                    },
-                                                ],
-                                                menuId: `latestFile-${file.id}`,
-                                                activeMenu,
-                                                setActiveMenu,
-                                            }}
-                                            handleDoubleClick={handleOpenFile}
-                                            trackSelectedFile={(file) => {
-                                                setActiveFile(file);
-                                            }}
-                                        />
-                                    ),
-                                )}
-                            </div>
-                        </div>
                     </FocusMenu>,
                 ]}
             </DashboardLayout>

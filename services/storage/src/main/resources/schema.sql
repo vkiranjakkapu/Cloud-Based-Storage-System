@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS files (
 CREATE TABLE IF NOT EXISTS file_sharing (
     id UUID NOT NULL PRIMARY KEY,
     file_id UUID NOT NULL,
-    user_id UUID NULL,
+    target_user_id UUID NULL,
 
     type VARCHAR(255) NOT NULL
         CONSTRAINT chk_file_sharing_type
@@ -194,9 +194,9 @@ CREATE INDEX IF NOT EXISTS idx_file_sharing_file_id
 
 
 -- Useful for user-specific sharing lookups.
-CREATE INDEX IF NOT EXISTS idx_file_sharing_user_id
-    ON file_sharing (user_id)
-    WHERE user_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_file_sharing_target_user_id
+    ON file_sharing (target_user_id)
+    WHERE target_user_id IS NOT NULL;
 
 
 -- -------------------------------------------------------------

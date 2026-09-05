@@ -118,6 +118,18 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional(readOnly = true)
+	public List<UserResponse> getAllUsersByEmail(String email) {
+		AuthenticatedUser currentUser = authenticationContext.getCurrentUser().orElse(null);
+
+		return userRepository.findAllByEmailStartingWithAndDeletedFalse(email)
+				.stream()
+				.filter(user -> !user.getId().equals(UUID.fromString(currentUser.getUserId())))
+				.map(this::mapToResponse)
+				.toList();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
 	public UserResponse getUserById(UUID id) {
 
 		User user = userRepository.findById(id)
