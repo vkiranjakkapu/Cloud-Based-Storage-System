@@ -54,9 +54,7 @@ export default function NavSidebarLayout({
             <aside
                 className={`
 					fixed inset-y-0 left-0 z-50 flex flex-col ${
-                        focusMenu && rightSidebar && !rightSidebar.active
-                            ? "w-80"
-                            : ""
+                        !rightSidebar?.active && focusMenu ? "w-80" : ""
                     }
                     transition-transform duration-300 ease-in-out
                     rounded-e-xl
@@ -75,16 +73,13 @@ export default function NavSidebarLayout({
                     showOpenChevron={rightSidebar && rightSidebar.active}
                     handleOpenNav={rightSidebar?.handleSidebarClose}
                 >
-                    {focusMenu &&
-                        rightSidebar &&
-                        !rightSidebar.active &&
-                        focusMenu}
+                    {!rightSidebar?.active && focusMenu}
                 </Sidebar>
             </aside>
 
             {/* RIGHT VIEWPORT VIEW CANVAS */}
             <div
-                className={`flex flex-col w-full ${focusMenu && rightSidebar && !rightSidebar.active ? "md:pl-80" : "md:pl-[3.45rem]"}`}
+                className={`flex flex-col w-full ${!rightSidebar?.active && focusMenu ? "md:pl-80" : "md:pl-[3.45rem]"}`}
             >
                 {/* Mobile Menu */}
                 <header className="md:hidden flex flex-wrap h-16 items-center justify-between border-b px-4 border-gray-200 bg-white dark:border-secondary-dark dark:bg-secondary">

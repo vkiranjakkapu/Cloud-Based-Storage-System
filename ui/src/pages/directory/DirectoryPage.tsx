@@ -1,11 +1,16 @@
 import {
     ArrowRightCircleIcon,
     ArrowRightIcon,
+    ArrowUpTrayIcon,
     CheckCircleIcon,
+    DocumentDuplicateIcon,
     DocumentTextIcon,
+    EllipsisHorizontalIcon,
     FolderOpenIcon,
     FolderPlusIcon,
+    InformationCircleIcon,
     PencilIcon,
+    PlusCircleIcon,
     ShareIcon,
     TrashIcon,
     UserIcon,
@@ -37,7 +42,10 @@ import Notification, {
     type NotificationProps,
 } from "../../components/Notification";
 import SharedUserComponent from "../../components/SheredUserComponent";
-import { type UploadComponentProps } from "../../components/UploadComponent";
+import {
+    UploadComponent,
+    type UploadComponentProps,
+} from "../../components/UploadComponent";
 import { RoutePaths } from "../../routes/RoutePaths";
 import DirectoryService, {
     UpdateType,
@@ -54,7 +62,8 @@ import UploadService, {
 import { DateFormatter } from "../../utils/DateFormatter";
 import { formatBytes } from "../../utils/FileUploadHelper";
 import FilesList from "./FilesList";
-import DirectorySideMenu from "./SideMenu";
+import FocusMenu from "../../components/nav/FocusMenu";
+import FileListComponent from "../../components/directories/FileListComponent";
 
 type AllNotifications = {
     add: NotificationProps;
@@ -1331,19 +1340,167 @@ export default function DirectoryPage() {
                     </>,
 
                     // Focus Menu
-                    DirectorySideMenu(
-                        uploadItems,
-                        directory,
-                        activeMenu,
-                        handleCancelUpload,
-                        handleOpenFile,
-                        handleFileInfoClick,
-                        setActiveFile,
-                        setActiveFile,
-                        handleShareFileClick,
-                        deleteFile,
-                        setActiveMenu,
-                    ),
+                    <FocusMenu>
+                        {/* Upload Options */}
+                        <div className="container">
+                            <DividerComponent
+                                text="Upload"
+                                icon={PlusCircleIcon}
+                            />
+                            <ActionButton
+                                icon={ArrowUpTrayIcon}
+                                text="Upload Files"
+                                theme="primary"
+                                onClick={() => {
+                                    document
+                                        .getElementById("fileUpload")
+                                        ?.click();
+                                }}
+                            />
+                            {uploadItems.length > 0 && (
+                                <div className="mt-3 space-y-2 max-h-60 overflow-y-auto">
+                                    {uploadItems.map((item, idx) => (
+                                        <UploadComponent
+                                            key={`${item.file.name}-${idx}`}
+                                            file={item.file}
+                                            progress={item.progress}
+                                            status={item.status}
+                                            error={item.error}
+                                            handleCancelClick={
+                                                handleCancelUpload
+                                            }
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        {(directory?.sharedFiles ?? []).length > 0 && (
+                            <div className="container flex-1">
+                                <DividerComponent
+                                    text="Shared Files"
+                                    icon={DocumentDuplicateIcon}
+                                />
+                                {/* Shared Files */}
+                                <div className="space-y-1">
+                                    {(
+                                        directory?.sharedFiles?.slice(0, 5) ??
+                                        []
+                                    ).map((file, idx) => (
+                                        <FileListComponent
+                                            key={idx}
+                                            file={file}
+                                            useIcon={DocumentTextIcon}
+                                            showFileSize={false}
+                                            showOwner={false}
+                                            handleDoubleClick={handleOpenFile}
+                                            infoButton={{
+                                                onClick(file) {
+                                                    handleFileInfoClick(file);
+                                                },
+                                            }}
+                                            trackSelectedFile={(file) => {
+                                                setActiveFile(file);
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        {/* Files */}
+                        <div className="container flex-1">
+                            <DividerComponent
+                                text="Latest Files"
+                                icon={DocumentTextIcon}
+                            />
+                            {/* Latest Files */}
+                            <div className="space-y-1">
+                                {(directory?.files?.slice(0, 5) ?? []).map(
+                                    (file, idx) => (
+                                        <FileListComponent
+                                            key={idx}
+                                            file={file}
+                                            useIcon={DocumentTextIcon}
+                                            showFileSize={false}
+                                            showOwner={false}
+                                            dropdown={{
+                                                type: "icon",
+                                                useIcon: EllipsisHorizontalIcon,
+                                                props: {
+                                                    theme: "secondary-blur",
+                                                    // menutheme: "secondary-blur",
+                                                },
+                                                alignment: "bottom",
+                                                items: [
+                                                    {
+                                                        target: file,
+                                                        icon: {
+                                                            icon: InformationCircleIcon,
+                                                        },
+                                                        text: "Info",
+                                                        onClick(item) {
+                                                            handleFileInfoClick(
+                                                                item as MetaFile,
+                                                            );
+                                                        },
+                                                    },
+                                                    {
+                                                        target: file,
+                                                        icon: {
+                                                            icon: PencilIcon,
+                                                        },
+                                                        text: "Rename",
+                                                        onClick({
+                                                            item,
+                                                        }: {
+                                                            item: MetaFile;
+                                                        }) {
+                                                            renameFile(
+                                                                item.id,
+                                                                item.fileName,
+                                                            );
+                                                        },
+                                                    },
+                                                    {
+                                                        target: file,
+                                                        icon: {
+                                                            icon: ShareIcon,
+                                                        },
+                                                        text: "Share",
+                                                        onClick(item) {
+                                                            handleShareFileClick(
+                                                                item as MetaFile,
+                                                            );
+                                                        },
+                                                    },
+                                                    {
+                                                        target: file,
+                                                        icon: {
+                                                            icon: TrashIcon,
+                                                            customiseIcon:
+                                                                "group-hover:text-rose-500!",
+                                                        },
+                                                        text: "Delete",
+                                                        onClick(item) {
+                                                            deleteFile(
+                                                                item as MetaFile,
+                                                            );
+                                                        },
+                                                    },
+                                                ],
+                                                menuId: `latestFile-${file.id}`,
+                                                activeMenu,
+                                                setActiveMenu,
+                                            }}
+                                            handleDoubleClick={handleOpenFile}
+                                            trackSelectedFile={(file) => {
+                                                setActiveFile(file);
+                                            }}
+                                        />
+                                    ),
+                                )}
+                            </div>
+                        </div>
+                    </FocusMenu>,
                 ]}
             </DashboardLayout>
         </>
