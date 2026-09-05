@@ -3,6 +3,7 @@ package com.cbss.storage.services;
 import java.util.List;
 import java.util.UUID;
 
+import com.cbss.storage.dto.FileReportResponseDto;
 import com.cbss.storage.dto.FileUpdateRequestDto;
 import com.cbss.storage.dto.LatestFileDto;
 import com.cbss.storage.dto.UploadRequest;
@@ -15,6 +16,8 @@ public interface MetaFileService {
     List<MetaFile> getFileVersions(UUID fileId);
 
     List<LatestFileDto> getLatestFiles();
+
+    List<FileReportResponseDto> getFileReports();
 
     MetaFile createFile(UploadRequest document);
 
