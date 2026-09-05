@@ -7,8 +7,15 @@ import com.cbss.storage.models.Folder;
 import com.cbss.storage.models.MetaFile;
 
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
-public record DirectoryResponseDto(Folder current, List<Folder> parentFolders,Set<Folder> subFolders, Set<MetaFile> files) {
+@Getter
+public class DirectoryResponseDto {
+
+    Folder current;
+    List<Folder> parentFolders;
+    Set<Folder> subFolders;
+    Set<MetaFile> files;
 
 }

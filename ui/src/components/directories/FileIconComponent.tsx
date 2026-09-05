@@ -13,7 +13,7 @@ import type { MetaFile } from "../../services/FileService";
 
 type FileIconComponentProps = HTMLAttributes<HTMLDivElement> & {
     file: MetaFile;
-    dropdown: FloatingMenuComponentProps<MetaFile>;
+    dropdown?: FloatingMenuComponentProps<MetaFile>;
     isActive: boolean;
     className?: string;
 
@@ -73,25 +73,28 @@ export default function FileIconComponent({
                         handleInfoClick(file);
                     }}
                 />
-                <div
-                    className="ml-auto w-fit! *:*:p-0 *:*:*:first:m-0!"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    <FloatingMenuComponent
-                        {...{
-                            ...dropdown,
-                            alignment: "left",
-                            props: {
-                                ...dropdown.props,
-                                icon: EllipsisVerticalIcon,
-                                theme:
-                                    dropdown.props?.theme ?? `secondary-blur`,
-                                customise: `size-8! ml-auto m-1 ${dropdown.props?.customise}`,
-                                customiseIcon: `size-5! ${dropdown.props?.customiseIcon}`,
-                            },
-                        }}
-                    />
-                </div>
+                {dropdown && (
+                    <div
+                        className="ml-auto w-fit! *:*:p-0 *:*:*:first:m-0!"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <FloatingMenuComponent
+                            {...{
+                                ...dropdown,
+                                alignment: "left",
+                                props: {
+                                    ...dropdown.props,
+                                    icon: EllipsisVerticalIcon,
+                                    theme:
+                                        dropdown.props?.theme ??
+                                        `secondary-blur`,
+                                    customise: `size-8! ml-auto m-1 ${dropdown.props?.customise}`,
+                                    customiseIcon: `size-5! ${dropdown.props?.customiseIcon}`,
+                                },
+                            }}
+                        />
+                    </div>
+                )}
             </div>
             <DocumentTextIcon className="size-20 sm:size-25" />
             <div className="space-y-1 w-full p-2">

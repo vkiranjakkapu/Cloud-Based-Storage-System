@@ -21,17 +21,6 @@ class AuthService {
         });
     }
 
-    async register<T>(
-        payload: unknown,
-    ): Promise<ApiResponse<T> | ErrorResponse> {
-        return apiClient({
-            type: "post",
-            service: "profile",
-            uri: "/register",
-            payload,
-        });
-    }
-
     async login<T>(
         payload: LoginRequest,
     ): Promise<ApiResponse<T> | ErrorResponse> {

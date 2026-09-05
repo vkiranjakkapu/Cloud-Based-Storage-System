@@ -14,7 +14,7 @@ type FolderComponentProps = {
     folder: Folder;
 
     handleRenameClick: (folder: Folder) => void;
-    handleShareClick: (folder: Folder) => void;
+    handleShareClick?: (folder: Folder) => void;
     handleDeleteClick: (folder: Folder) => void;
     handleDoubleClick: (folder: Folder) => void;
 };
@@ -75,16 +75,18 @@ export function FolderComponent({
                         }}
                         title="Rename Folder"
                     />
-                    <IconComponent
-                        customise={`size-6.5 duration-300! ${isActive ? "translate-y-7.5" : "-translate-y-7.5 invisible pointer-events-none"}`}
-                        theme={`secondary-blur`}
-                        icon={ShareIcon}
-                        customiseIcon="size-3.5!"
-                        onClick={() => {
-                            handleShareClick(folder);
-                        }}
-                        title="Share Folder"
-                    />
+                    {handleShareClick && (
+                        <IconComponent
+                            customise={`size-6.5 duration-300! ${isActive ? "translate-y-7.5" : "-translate-y-7.5 invisible pointer-events-none"}`}
+                            theme={`secondary-blur`}
+                            icon={ShareIcon}
+                            customiseIcon="size-3.5!"
+                            onClick={() => {
+                                handleShareClick(folder);
+                            }}
+                            title="Share Folder"
+                        />
+                    )}
                     <IconComponent
                         customise={`size-6.5 duration-450! ${isActive ? "translate-y-7.5" : "-translate-y-15 invisible pointer-events-none"}`}
                         theme={`secondary-blur`}

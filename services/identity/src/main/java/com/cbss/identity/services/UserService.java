@@ -16,6 +16,8 @@ public interface UserService {
 
     List<UserResponse> getAllUsers();
 
+    List<UserResponse> getAllUsersByEmail(String email);
+
     List<UserResponse> getAllUsersByRole(RoleType role);
 
     List<UserResponse> getAllUsersWithIds(Collection<UUID> ids);

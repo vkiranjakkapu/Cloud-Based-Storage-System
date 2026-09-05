@@ -66,6 +66,11 @@ public class FolderServiceImp implements FolderService {
         Folder current = folderRepository.findByIdWithParent(folder.getId())
                 .orElseThrow(() -> new BusinessException(StorageExceptions.RESOURCE_NOT_FOUND, "Folder not found"));
 
+        if (currentUser.isUser() && !folder.getOwnerId().equals(currentUser.userId())) {
+            throw new BusinessException(SecurityExceptions.FORBIDDEN_ACCESS,
+                    "You are not allowed to access this folder");
+        }
+
         List<Folder> parentFolders = new ArrayList<>();
 
         while (current != null) {

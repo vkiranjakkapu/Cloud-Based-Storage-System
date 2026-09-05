@@ -10,6 +10,7 @@ import FieldLabelComponent from "./FieldLabelComponent";
 export interface SelectComponentProps extends SelectHTMLAttributes<HTMLSelectElement> {
     children?: ReactNode;
     id: string;
+    emptyText?: string;
     options: OptionComponentProps[];
     customise?: string;
     customiseField?: string;
@@ -24,6 +25,7 @@ interface OptionComponentProps extends OptionHTMLAttributes<HTMLOptionElement> {
 export default function SelectComponent({
     children,
     id,
+    emptyText,
     options,
     customise,
     customiseField,
@@ -45,7 +47,7 @@ export default function SelectComponent({
                 className={`focus:outline-none focus:ring-0 p-1 flex-1 capitalize ${customiseField}`}
                 {...props}
             >
-                <option value="">select</option>
+                <option value="">{emptyText ?? "select"}</option>
                 {options.map((opt, idx) => (
                     <option key={idx} value={opt.value}>
                         {opt.text ?? opt.value}

@@ -4,14 +4,23 @@ import IconComponent, {
     type IconThemes,
 } from "../IconComponent";
 
-export type MenuItem<T> = {
-    target?: T;
-    text?: string;
-    icon?: IconComponentProps;
-    title?: string;
-    className?: string;
-    onClick: (target: T | unknown) => void;
-};
+export type MenuItem<T> =
+    | {
+          target: T;
+          text?: string;
+          icon?: IconComponentProps;
+          title?: string;
+          className?: string;
+          onClick: (target: T) => void;
+      }
+    | {
+          target?: undefined;
+          text?: string;
+          icon?: IconComponentProps;
+          title?: string;
+          className?: string;
+          onClick: () => void;
+      };
 
 export type MenuItemProps<T> = {
     items: MenuItem<T>[];
@@ -44,7 +53,13 @@ export default function FloatingMenu<T>({
                                 hover:bg-white/40 dark:hover:bg-secondary-dark/70 group
                                 ${item.className}
                             `}
-                            onClick={() => item.onClick?.(item.target)}
+                            onClick={() => {
+                                if ("target" in item) {
+                                    item.onClick(item.target!);
+                                } else {
+                                    item.onClick();
+                                }
+                            }}
                             title={item.title ?? ""}
                         >
                             {item.icon && (
@@ -88,7 +103,11 @@ export default function FloatingMenu<T>({
                         customiseIcon={`size-4! ${item.icon?.customiseIcon}`}
                         icon={item.icon?.icon ?? EllipsisVerticalIcon}
                         onClick={() => {
-                            item.onClick(item.target);
+                            if ("target" in item) {
+                                item.onClick(item.target!);
+                            } else {
+                                item.onClick();
+                            }
                         }}
                     />
                 );

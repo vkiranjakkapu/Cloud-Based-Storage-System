@@ -50,13 +50,8 @@ public class CurrentUserServiceImp implements CurrentUserService {
     }
 
     @Override
-    public boolean isAgent() {
-        return currentUser().getAuthorities().contains("ROLE_AGENT");
-    }
-
-    @Override
-    public boolean isCustomer() {
-        return currentUser().getAuthorities().contains("ROLE_CUSTOMER");
+    public boolean isUser() {
+        return currentUser().getAuthorities().contains("ROLE_USER");
     }
 
 }
