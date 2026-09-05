@@ -11,4 +11,5 @@ export const RoutePaths = {
 
     USERS: "/users",
     PROFILE: "/profile",
+    USER: "/profile/:userId",
 } as const;

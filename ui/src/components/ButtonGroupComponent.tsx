@@ -43,14 +43,24 @@ export function ButtonGroupComponent({
                     const activeTheme = (
                         btn.active ? theme.split("-")[0] : theme
                     ) as IconThemes;
+
+                    const isFirst = idx === 0;
+                    const isLast = idx === buttons.length - 1;
+
+                    const roundedClass = isFirst
+                        ? `rounded-none! rounded-l-${rounded}!`
+                        : isLast
+                          ? `rounded-none! rounded-r-${rounded}!`
+                          : "rounded-none!";
+
                     return (
                         <ActionButton
                             key={idx}
-                            customise={`size-7 rounded-none`}
-                            customiseLayer={`rounded-none`}
-                            theme={activeTheme}
-                            onClick={btn.onClick}
                             {...{ ...btn, active: btn.active + "" }}
+                            customise={`size-7 ${roundedClass} ${btn.customise}`}
+                            customiseLayer={`${roundedClass} ${btn.customiseLayer}`}
+                            theme={btn.theme ?? activeTheme}
+                            onClick={btn.onClick}
                         />
                     );
                 })}

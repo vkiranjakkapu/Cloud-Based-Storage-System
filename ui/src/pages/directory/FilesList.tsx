@@ -21,7 +21,7 @@ import usePagination from "../../components/pagination/usePagination";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import FileListComponent from "../../components/directories/FileListComponent";
 import { type SpinnerComponentProps } from "../../components/SpinnerComponent";
-import type { MetaFile } from "../../services/DirectoryService";
+import type { MetaFile } from "../../services/FileService";
 
 type FilesListProps = {
     files: MetaFile[];

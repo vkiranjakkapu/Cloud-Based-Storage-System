@@ -662,8 +662,8 @@ export default function DirectoryPage() {
                                 folderModal == "add"
                                     ? "Add Folder"
                                     : folderModal == "share"
-                                      ? "Share Folder"
-                                      : "Edit Folder"
+                                      ? `Share '${activeFolder?.name}' folder`
+                                      : `Edit '${activeFolder?.name}' folder`
                             }
                             icon={
                                 folderModal == "add"
@@ -1134,7 +1134,16 @@ export default function DirectoryPage() {
                                     : `${directory?.subFolders.length} folders and ${directory?.files.length} files in category`
                             }
                             actionButtons={[
-                                { theme: "primary", icon: ShareIcon },
+                                {
+                                    icon: ShareIcon,
+                                    theme: "primary",
+                                    onClick() {
+                                        setActiveFolder(
+                                            directory?.current ?? null,
+                                        );
+                                        setFolderModal("share");
+                                    },
+                                },
                             ]}
                         >
                             {/* Folders Section */}

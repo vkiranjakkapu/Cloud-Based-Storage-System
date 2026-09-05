@@ -33,6 +33,7 @@ export default function AppRoutes() {
                 />
                 <Route path={RoutePaths.GROUPS} element={<GroupsPage />} />
                 <Route path={RoutePaths.PROFILE} element={<ProfilePage />} />
+                <Route path={RoutePaths.USER} element={<ProfilePage />} />
                 <Route element={<AdminLayout />}>
                     <Route path={RoutePaths.USERS} element={<UsersPage />} />
                 </Route>

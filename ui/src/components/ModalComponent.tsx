@@ -71,7 +71,7 @@ export default function ModalComponent({
             >
                 {/* Header Block */}
                 <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-200 dark:border-cool/15">
-                    <h3 className="flex gap-1 items-center justify-start font-semibold text-current">
+                    <h3 className="flex gap-1 items-center justify-start font-semibold text-current capitalize">
                         {Icon && <Icon className="size-4" />}
                         <span>{title}</span>
                     </h3>
