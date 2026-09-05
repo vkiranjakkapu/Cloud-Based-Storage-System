@@ -57,6 +57,9 @@ class UserServiceImplTest {
 	@Mock
 	private AuthenticationContext authenticationContext;
 
+	@Mock
+	private StorageService storageService;
+
 	@InjectMocks
 	private UserServiceImpl userService;
 

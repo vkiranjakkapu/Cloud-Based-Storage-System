@@ -1,0 +1,38 @@
+package com.cbss.reports.controller;
+
+import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.cbss.reports.enums.ApplicationExceptions;
+import com.cbss.reports.exceptions.BusinessException;
+import com.cbss.reports.exceptions.ForbiddenException;
+import com.platform.web.exception.ErrorDefinition;
+import com.platform.web.exception.SecurityExceptions;
+import com.platform.web.model.ErrorResponse;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
+
+        Optional.ofNullable(e.getCause()).ifPresent(er -> er.printStackTrace());
+
+        ErrorDefinition definition = Optional.ofNullable(e.getException())
+                .orElse(ApplicationExceptions.UNEXPECTED_EXCEPTION);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(definition,
+                Optional.ofNullable(e.getMessage()).orElse(definition.getErrorMessage())));
+    }
+
+    @ExceptionHandler({ ForbiddenException.class, AccessDeniedException.class })
+    public ResponseEntity<ErrorResponse> handleForbiddenException(Exception e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(SecurityExceptions.FORBIDDEN_ACCESS, e.getMessage()));
+    }
+
+}

@@ -16,4 +16,6 @@ public interface MetaFileRepository extends JpaRepository<MetaFile, UUID> {
 
     List<MetaFile> findAllByOwnerIdAndIsLatestTrueAndIsDeletedFalse(UUID userId);
 
+    List<MetaFile> findAllByIsLatestTrueAndIsDeletedFalse();
+
 }

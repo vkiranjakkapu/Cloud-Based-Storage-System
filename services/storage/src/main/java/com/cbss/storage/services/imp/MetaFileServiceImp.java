@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cbss.storage.dto.FileReportResponseDto;
 import com.cbss.storage.dto.FileUpdateRequestDto;
 import com.cbss.storage.dto.LatestFileDto;
 import com.cbss.storage.dto.UploadRequest;
@@ -45,6 +46,29 @@ public class MetaFileServiceImp implements MetaFileService {
     private final FolderService folderService;
     private final StorageService storageService;
     private final ShareService shareService;
+
+    @Override
+    public List<FileReportResponseDto> getFileReports() {
+        List<FileReportResponseDto> response = fileRepository.findAllByIsLatestTrueAndIsDeletedFalse().stream()
+                .map(this::mapFileReportResponse)
+                .toList();
+        return response;
+    }
+
+    private FileReportResponseDto mapFileReportResponse(MetaFile file) {
+        return FileReportResponseDto.builder()
+                .id(file.getId())
+                .fileName(file.getFileName())
+                .filePath(file.getFilePath())
+                .fileSize(file.getFileSize())
+                .mimeType(file.getMimeType())
+                .ownerId(file.getOwnerId())
+                .accesses(file.getAccesses())
+                .shares(file.getShares())
+                .modifiedDate(file.getModifiedDate())
+                .createdAt(file.getCreatedAt())
+                .build();
+    }
 
     @Override
     public MetaFile getFileById(UUID fileId) {
