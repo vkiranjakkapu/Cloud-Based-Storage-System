@@ -1,19 +1,3 @@
-import { useNavigate, useParams } from "react-router-dom";
-import DashboardLayout from "../../components/layouts/DashboardLayout";
-import DashboardSection from "../../components/layouts/DashboardSection";
-import type { UserProfile } from "../../context/usePrincipal";
-import AuthService from "../../services/AuthService";
-import usePrincipal, { UserGender } from "../../context/usePrincipal";
-import type { NotificationProps } from "../../components/Notification";
-import {
-    useEffect,
-    useState,
-    type SetStateAction,
-    type SubmitEvent,
-} from "react";
-import { RoutePaths } from "../../routes/RoutePaths";
-import Notification from "../../components/Notification";
-import InputComponent from "../../components/form/InputComponent";
 import {
     CalendarIcon,
     CheckBadgeIcon,
@@ -25,9 +9,25 @@ import {
     PhoneIcon,
     UserIcon,
 } from "@heroicons/react/24/outline";
-import SelectComponent from "../../components/form/SelectComponent";
+import {
+    useEffect,
+    useState,
+    type SetStateAction,
+    type SubmitEvent,
+} from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import ActionButton from "../../components/ActionButtonComponent";
+import type { NotificationProps } from "../../components/Notification";
+import Notification from "../../components/Notification";
+import InputComponent from "../../components/form/InputComponent";
+import SelectComponent from "../../components/form/SelectComponent";
+import DashboardLayout from "../../components/layouts/DashboardLayout";
+import DashboardSection from "../../components/layouts/DashboardSection";
 import DividerComponent from "../../components/nav/DividerComponent";
+import type { UserProfile } from "../../context/usePrincipal";
+import usePrincipal, { UserGender } from "../../context/usePrincipal";
+import { RoutePaths } from "../../routes/RoutePaths";
+import UserService from "../../services/UserService";
 
 type AllNotifications = {
     profile: NotificationProps;
@@ -71,14 +71,14 @@ export default function ProfilePage() {
     }
 
     useEffect(() => {
-        if (!userId) return
+        if (!userId) return;
 
         if (!isAdmin) {
             navigate(RoutePaths.PROFILE);
             return;
         }
 
-        AuthService.getUserById<UserProfile>(userId)
+        UserService.getUserById<UserProfile>(userId)
             .then((resp) => {
                 if (resp && !("errorMessage" in resp)) {
                     setFetchedUser({
@@ -110,7 +110,7 @@ export default function ProfilePage() {
             dob: formData.get("dob"),
         } as UserProfile;
 
-        AuthService.updateProfile<UserProfile>(
+        UserService.updateProfile<UserProfile>(
             String(userId ?? profile?.id),
             payload,
         ).then((resp) => {
@@ -153,7 +153,7 @@ export default function ProfilePage() {
             oldPassword: formData.get("oldPassword"),
             newPassword: formData.get("newPassword"),
         };
-        AuthService.changePassword<UserProfile>(payload).then((resp) => {
+        UserService.changePassword<UserProfile>(payload).then((resp) => {
             if (resp && !("errorMessage" in resp)) {
                 setNotifications("password", {
                     type: "success",
@@ -296,7 +296,12 @@ export default function ProfilePage() {
                                     onSubmit={handlePasswordChange}
                                     className="grid grid-cols-1 gap-3 bg-slate-100 dark:bg-slate-800 p-3 rounded border border-slate-200 dark:border-slate-700 shadow-sm"
                                 >
-                                    <DividerComponent text="OLD Password" icon={LockClosedIcon} inline customise="col-span-full" />
+                                    <DividerComponent
+                                        text="OLD Password"
+                                        icon={LockClosedIcon}
+                                        inline
+                                        customise="col-span-full"
+                                    />
                                     {notifications?.password && (
                                         <div className="col-span-full">
                                             <Notification
@@ -318,7 +323,12 @@ export default function ProfilePage() {
                                         required
                                     />
                                     <div className=""></div>
-                                    <DividerComponent text="new Password" icon={LockClosedIcon} inline customise="col-span-full" />
+                                    <DividerComponent
+                                        text="new Password"
+                                        icon={LockClosedIcon}
+                                        inline
+                                        customise="col-span-full"
+                                    />
                                     <InputComponent
                                         type="password"
                                         id="newPassword"

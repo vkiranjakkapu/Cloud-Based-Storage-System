@@ -41,7 +41,7 @@ import usePrincipal, {
     type UserProfile,
 } from "../../context/usePrincipal";
 import { RoutePaths } from "../../routes/RoutePaths";
-import AuthService from "../../services/AuthService";
+import UserService from "../../services/UserService";
 import UserCard from "./UserCard";
 import FemaleProfile from "/undraw_fitness-influencer-avatar_04j0.svg";
 
@@ -61,7 +61,7 @@ export default function UsersPage() {
         useState<NotificationProps | null>(null);
 
     const refreshUsers = useCallback(() => {
-        AuthService.getAllUsers<UserProfile[]>().then((resp) => {
+        UserService.getAllUsers<UserProfile[]>().then((resp) => {
             if (resp && !("errorMessage" in resp)) {
                 setAllUsers(resp.data.filter((u) => u.id != profile?.id));
             }
@@ -93,7 +93,7 @@ export default function UsersPage() {
             role: newUser?.roles[0],
         };
 
-        AuthService.createUser<UserProfile>(payload).then((resp) => {
+        UserService.createUser<UserProfile>(payload).then((resp) => {
             if (resp && !("errorMessage" in resp)) {
                 setNotifications({
                     type: "success",
@@ -118,7 +118,7 @@ export default function UsersPage() {
 
     const deleteUser = useCallback(
         (id: unknown) => {
-            AuthService.deleteProfile<{ status: boolean }>(id as number).then(
+            UserService.deleteProfile<{ status: boolean }>(id as number).then(
                 (resp) => {
                     if (resp && "errorMessage" in resp) {
                         window.alert(resp.errorMessage);
@@ -150,14 +150,14 @@ export default function UsersPage() {
                     text: "Edit",
                     icon: PencilIcon,
                     customise: "h-6",
-                    customiseIcon:"size-4!",
+                    customiseIcon: "size-4!",
                     onClick: () =>
                         navigate(RoutePaths.USER.replace(":userId", user.id)),
                 },
                 {
                     text: "Delete",
                     icon: TrashIcon,
-                    customise:"h-6",
+                    customise: "h-6",
                     customiseIcon: "text-rose-400! size-4!",
                     onClick: deleteUser,
                 },

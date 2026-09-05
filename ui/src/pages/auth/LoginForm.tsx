@@ -10,6 +10,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useState, type SetStateAction, type SubmitEvent } from "react";
 import type { ApiResponse } from "../../api/api";
+import ActionButton from "../../components/ActionButtonComponent";
 import InputComponent from "../../components/form/InputComponent";
 import IconComponent from "../../components/IconComponent";
 import LoadingPortalComponent from "../../components/LoadingPortalComponent";
@@ -20,8 +21,7 @@ import usePrincipal, {
     type UserProfile,
 } from "../../context/usePrincipal";
 import type { LoginRequest } from "../../services/AuthService";
-import AuthService from "../../services/AuthService";
-import ActionButton from "../../components/ActionButtonComponent";
+import UserService from "../../services/UserService";
 
 type AllNotifications = {
     login: NotificationProps;
@@ -104,7 +104,7 @@ export default function LoginForm() {
             confirmPassword,
         };
 
-        AuthService.register<ApiResponse<UserProfile>>(payload).then((resp) => {
+        UserService.register<ApiResponse<UserProfile>>(payload).then((resp) => {
             if (resp && !("errorMessage" in resp)) {
                 login({
                     email: formData.get("email"),
